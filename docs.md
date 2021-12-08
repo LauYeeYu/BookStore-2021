@@ -125,7 +125,7 @@ written by 陈永杉
 
 ### 鲁棒性
 
-程序应当对各类的错误输入进行区分，throw对应的报错并拒绝执行该操作
+程序应当对各类的错误输入进行区分，throw 对应的报错并拒绝执行该操作
 
 ## 主体逻辑说明
 
@@ -230,13 +230,13 @@ account : 存储所有已经注册的账户的相关信息
 
 #### 图书相关文件组
 
-book_index_ISBN : 以ISBN为关键字存储某一图书在Book_store中的位置
+book_index_ISBN : 以ISBN为关键字存储某一图书在 book 中的位置
 
-book_index_author : 以作者名为关键字存储某一图书在Book_store中的位置
+book_index_author : 以作者名为关键字存储某一图书在 book 中的位置
 
-book_index_name : 以图书名为关键字存储某一图书在Book_store中的位置
+book_index_name : 以图书名为关键字存储某一图书在 book 中的位置
 
-book_index_keyword : 以关键词为关键字存储某一图书在Book_store中的位置
+book_index_keyword : 以关键词为关键字存储某一图书在 book 中的位置
 
 book : 存储所有图书的相关信息
 
@@ -298,7 +298,7 @@ public:
 
 class AccountGroup {
 private:
-    Unrolled_Linklist<account, UserID, ID_account_map> _id_index;
+    UnrolledLinklist<account, UserID, ID_account_map> _id_index;
 
 public:
     AccountGroup();
@@ -308,10 +308,15 @@ public:
     void registerUser(TokenScanner& line, const LoggingSituation& logStatus);
 
     void addUser(TokenScanner& line, const LoggingSituation& logStatus);
+
     void pop(TokenScanner& line, const LoggingSituation& logStatus);
+
     Account find(std::string& userID);
+
     bool count(std::string& userID);
-    void change_password(TokenScanner& line, const LoggingSituation& logStatus);
+
+    void changePassword(TokenScanner& line, const LoggingSituation& logStatus);
+
     void clear();
 };
 ```
@@ -325,14 +330,19 @@ class LoggingSituation {
 private:
     int _logged_num = 0; // 存储已登录账户数目
     std::vector<ID> _logged_in_ID; // 存储已登录的账户ID
-    vector<int> logged_priority; // 存储已登录的账户对应权限
+    std::vector<int> logged_priority; // 存储已登录的账户对应权限
     std::vector<int> _selected_book_id
 public:
     LogSituation();
+
     ~LogSituation();
-    void logIn(std::string logg); // 添加一个已登录账户
+
+    void logIn(std::string logID); // 添加一个已登录账户
+
     void logOut(); // 退出最后一个登录的账户
+
     std::string back() const; // 返回此时账号ID
+
     int backPriority() const;// 返回此时账号权限
 };
 ```
@@ -397,7 +407,7 @@ struct Keywords {
   bool operator<(const Keywords&) const;
 };
 
-struct Book{
+struct Book {
     int id;
 
     ISBN isbn;
@@ -421,15 +431,15 @@ struct Book{
     friend str::ostream& operator<<(std::ostream& os, const Book& book);
 };
 
-class BookGroup{
+class BookGroup {
 private:
-    Unrolled_Linklist<book_index_ISBN, ISBN, int> ISBN_book_map;
+    UnrolledLinklist<book_index_ISBN, ISBN, int> ISBN_book_map;
 
-    Unrolled_Linklist<book_index_name, Name, int> name_book_map;
+    UnrolledLinklist<book_index_name, Name, int> name_book_map;
 
-    Unrolled_Linklist<book_index_Author, Author, int> author_book_map;
+    UnrolledLinklist<book_index_Author, Author, int> author_book_map;
 
-    Unrolled_Linklist<book_index_keyword, Keyword, int> keywords_book_map;
+    UnrolledLinklist<book_index_keyword, Keyword, int> keywords_book_map;
     
     int all_book_num = 0;
 
@@ -438,15 +448,15 @@ public:
 
     ~BookGroup();
 
-    Book find(TokenScanner& line, const LoggingSituation& loggingStatus);
+    Book find(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
-    void change(TokenScanner& line, const LoggingSituation& loggingStatus);
+    void change(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
-    void output(TokenScanner& line, const LoggingSituation& loggingStatus);
+    void output(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
-    void input(TokenScanner& line, const LoggingSituation& loggingStatus);
+    void input(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
-    void select(TokenScanner& line, LoggingSituation& loggingStatus);
+    void select(TokenScanner& line, LoggingSituation& loggingStatus, LogGroup& logGroup);
 
     void clear();
 };
@@ -462,24 +472,24 @@ public:
 
 #include "Unrolled_Linklist.h"
 
-struct log{
+struct log {
     int num;
     bool seal;
-    char[31] operate_account;    
-    char[61] book_name;
+    char[31] operateAccount;    
+    char[61] bookName;
 };
 
-class logGroup{
+class LogGroup {
 private:
-    vector<deal> all_deal;
+    vector<deal> allDeal;
 public:
-    log_group();
+    LogGroup();
 
-    ~log_group();
+    ~LogGroup();
 
     void report(TokenScanner& line, const LoggingSituation& loggingStatus);
 
-    void add(TokenScanner& line, const loggingSituation& loggingStatus);
+    void add(log& newLog, const loggingSituation& loggingStatus);
 
     void show(TokenScanner& line, const LoggingSituation& loggingStatus);
 
@@ -567,11 +577,11 @@ public:
 
 #### 账户
 
-所有账户信息在 account 中顺序存储，在 account_index 中以块链形式存储其在Account_store中的对应地址。
+所有账户信息在 account 中顺序存储，在 account_index 中以块链形式存储其在 account 中的对应地址。
 
 #### 图书
 
-所有图书信息在Book_store中顺序存储，在book_index_ISBN / book_index_name / book_index_author / book_index_keywords 中以块链形式存储对应的 book 在 book_store 中的相应位置。
+所有图书信息在 book 中顺序存储，在book_index_ISBN / book_index_name / book_index_author / book_index_keywords 中以块链形式存储对应的 book 在 book_store 中的相应位置。
 
 #### 日志
 
