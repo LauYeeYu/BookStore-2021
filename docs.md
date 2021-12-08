@@ -38,7 +38,7 @@ written by 陈永杉
 >     # 基础指令
 >     quit
 >     exit
->                 
+>                    
 >     # 账户系统指令
 >     su [User-ID] ([Password])?
 >     logout
@@ -46,14 +46,14 @@ written by 陈永杉
 >     passwd [User-ID] ([Old-Password])? [New-Password]
 >     useradd [User-ID] [Password] [Priority] [User-Name]
 >     delete [User-ID]
->                 
+>                    
 >     # 图书系统指令
 >     show (-ISBN=[ISBN] | -name="[Book-Name]" | -author="[Author]" | -keyword="[Keyword]")?
 >     buy [ISBN] [Quantity]
 >     select [ISBN]
 >     modify (-ISBN=[ISBN] | -name="[Book-Name]" | -author="[Author]" | -keyword="[Keyword]" | -price=[Price])+
 >     import [Quantity] [Total-Cost]
->                 
+>                    
 >     # 日志系统指令
 >     report myself
 >     show finance ([Time])?
@@ -129,7 +129,7 @@ written by 陈永杉
 
 ## 主体逻辑说明
 
-- 在main函数中执行一个循环以读入控制台的每一行输入并作出即时处理
+- 在 main 函数中执行一个循环以读入控制台的每一行输入并作出即时处理
 
 - 使用一个子程序以解析输入指令，并进行第一类错误输入的抛出。建议针对输入指令第一词调用不同类型的指令处理函数。（ exit 与 quit 应单写一类处理函数）
 
@@ -143,7 +143,7 @@ written by 陈永杉
 
 ## 代码文件结构
 
-函数主要包含：main函数、输入语句解析函数 (token scanner)、基础类指令处理函数、账户相关指令处理函数、图书相关指令处理函数、日志相关处理函数、错误类型处理函数。
+函数主要包含：main 函数、输入语句解析函数 (token scanner)、基础类指令处理函数、账户相关指令处理函数、图书相关指令处理函数、日志相关处理函数、错误类型处理函数。
 
 类主要包含：账户类、图书类、日志类、登录状态类、指令语句基类及其派生类。
 
@@ -151,7 +151,7 @@ written by 陈永杉
 
 #### main 函数：
 
-输出使用方法导引，后开始执行一个 while 循环，循环内使用 try-catch 语句，依次调用 tokenscanner 函数、对应的语句处理函数、错误处理函数。应有一个账户类来存储当前最表层的登录账号。
+输出使用方法导引，后开始执行一个 while 循环，循环内使用 try-catch 语句，依次调用 tokenscanner 类、对应的语句处理函数、错误处理函数。应有一个账户类来存储当前最表层的登录账号。
 
 涉及类：无
 
@@ -199,6 +199,8 @@ written by 陈永杉
 执行对应指令，调用日志类，对日志相关文件中的内容按照要求进行输出。对操作失败进行抛出。
 
 比较当前权限能否执行
+
+输出日志时希望以每一行包括操作者ID、操作者姓名、操作类型、涉及图书名、涉及金额的格式进行输出。
 
 涉及类：日志类
 
@@ -309,7 +311,7 @@ public:
     void pop(TokenScanner& line, const LoggingSituation& logStatus);
     Account find(std::string& userID);
     bool count(std::string& userID);
-    void change_password(token_scanner& line, const logging_situation& logStatus);
+    void change_password(TokenScanner& line, const LoggingSituation& logStatus);
     void clear();
 };
 ```
@@ -344,8 +346,8 @@ public:
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "Unrolled_Linklist.h"
-struct ISBN{
+#include "unrolled_linklist.h"
+struct ISBN {
     char[21] isbn;
 
     ISBN(const std::string& isbn_in);
@@ -464,6 +466,7 @@ struct log{
     int num;
     bool seal;
     char[31] operate_account;    
+    char[61] book_name;
 };
 
 class logGroup{
@@ -506,7 +509,7 @@ public:
 
     ~UnrolledLinkedList();
 
-    void insert(const keyType& key, const value_type& value);
+    void insert(const keyType& key, const valueType& value);
 
     void pop(const keyType& key);
 
@@ -536,18 +539,19 @@ public:
 
     ~DoubleUnrolledLinkedList();
 
-    void insert(const key_type1& key1, const key_type2& key2, const value_type& value);
+    void insert(const keyType1& key1, const keyType2& key2, const value_type& value);
 
-    void pop(const key_type1& key1, const key_type2& key2, const value_type& value);
+    void pop(const keyType1& key1, const keyType2& key2, const valueType& value);
     
-    void modify(const key_type1& key1, const key_type2& key2, const value_type& value);
+    void modify(const keyType1& key1, const keyType2& key2, const valueType& value);
 
     void clear();
 
-    value_type get(const key_type1& key1, const key_type2& key2) const;
+    valueType get(const keyType1& key1, const keyType2& key2) const;
     
     std::vector<valueType> traverse() const;
-    std::vector<valueType> traverse(const key_type1& key1) const;
+    
+    std::vector<valueType> traverse(const keyType1& key1) const;
 };
 ```
 
@@ -559,29 +563,29 @@ public:
 
 #### 登录状态
 
-直接顺序存储在Looging_situation中，每次操作直接在最后进行修改
+直接顺序存储在 LoggingSituation 中，每次操作直接在最后进行修改
 
 #### 账户
 
-所有账户信息在Account_store中顺序存储，在Account_index中以块链形式存储其在Account_store中的对应地址。
+所有账户信息在 account 中顺序存储，在 account_index 中以块链形式存储其在Account_store中的对应地址。
 
 #### 图书
 
-所有图书信息在Book_store中顺序存储，在Book_index_ISBN/Book_index_name/Book_index_author/Book_index_keywords中以块链形式存储对应的Book在Book_store中的相应位置。
+所有图书信息在Book_store中顺序存储，在book_index_ISBN / book_index_name / book_index_author / book_index_keywords 中以块链形式存储对应的 book 在 book_store 中的相应位置。
 
 #### 日志
 
-所有的操作日志在Log_store中顺序存储，在Log_index中顺序存储每个员工账户对应的操作在Log_store中的相应位置。
+所有的操作日志在 log 中顺序存储。
 
 ## 其他补充说明：关于bonus
 
 #### 满减
 
-为支持中文输入及emoji符号，可能需要更改所有类型中的char[]等变量类型并且可能会导致自动语法检测失效。
+为支持中文输入及 emoji 符号，可能需要更改所有类型中的 char[] 等变量类型并且可能会导致自动语法检测失效。
 
 #### 自动化
 
-希望能够支持Github Actions。
+希望能够支持 Github Actions。
 
 #### 安全第一
 
