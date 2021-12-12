@@ -157,7 +157,7 @@ written by 陈永杉
 
 涉及文件：使用方法导引文件
 
-#### tokenscanner 类
+#### TokenScanner 类
 将一整行输入数据读入，再比对字符串头部，由于所有合法指令开头均是给定单词，故可依次进行判断。再将其作为参数和登录状态类一起输入对应的语句处理函数中。
 
 建议全部使用 substr 函数。
@@ -244,7 +244,7 @@ book : 存储所有图书的相关信息
 
 log : 存储所有操作日志
 
-#### token scanner类
+#### token scanner 类
 
 ```CPP
 class TokenScanner {
@@ -503,19 +503,19 @@ public:
 
 
 
-#### $\bullet$ 块链基类
+#### 块链基类
 
 单键：
 
 ```cpp
-template <std::string fileName, typename keyType, typename valueType>
-class UnrolledLinkedList{
+template <class keyType, class valueType>
+class UnrolledLinkedList {
 private:
-    fstream _list;
+    std::fstream _list;
     int _size = 0;
     
 public:
-    UnrolledLinkedList();
+    UnrolledLinkedList(const std::string& fileName, int nodeSize = 316);
 
     ~UnrolledLinkedList();
 
@@ -538,18 +538,18 @@ public:
 双键：
 
 ```cpp
-template <std::string fileName, typename keyType1, typename keyType2，typename valueType>
-class DoubleUnrolledLinkedList{
+template <class keyType1, class keyType2, class valueType>
+class DoubleUnrolledLinkedList {
 private:
-    fstream _list;
+    std::fstream _list;
     int _size = 0;
     
 public:
-    DoubleUnrolledLinkedList();
+    DoubleUnrolledLinkedList(const std::string& fileName, int nodeSize = 316);
 
     ~DoubleUnrolledLinkedList();
 
-    void insert(const keyType1& key1, const keyType2& key2, const value_type& value);
+    void insert(const keyType1& key1, const keyType2& key2, const valueType& value);
 
     void pop(const keyType1& key1, const keyType2& key2, const valueType& value);
     
