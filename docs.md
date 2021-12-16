@@ -38,7 +38,7 @@ written by 陈永杉
 >     # 基础指令
 >     quit
 >     exit
->                    
+>                       
 >     # 账户系统指令
 >     su [User-ID] ([Password])?
 >     logout
@@ -46,14 +46,14 @@ written by 陈永杉
 >     passwd [User-ID] ([Old-Password])? [New-Password]
 >     useradd [User-ID] [Password] [Priority] [User-Name]
 >     delete [User-ID]
->                    
+>                       
 >     # 图书系统指令
 >     show (-ISBN=[ISBN] | -name="[Book-Name]" | -author="[Author]" | -keyword="[Keyword]")?
 >     buy [ISBN] [Quantity]
 >     select [ISBN]
 >     modify (-ISBN=[ISBN] | -name="[Book-Name]" | -author="[Author]" | -keyword="[Keyword]" | -price=[Price])+
 >     import [Quantity] [Total-Cost]
->                    
+>                       
 >     # 日志系统指令
 >     report myself
 >     show finance ([Time])?
@@ -527,9 +527,9 @@ public:
 
     void clear();
 
-    valueType get(const keyType& key) const;
+    valueType* get(const keyType& key);
     
-    std::vector<valueType> traverse() const;
+    std::vector<valueType> traverse();
 };
 ```
 
@@ -551,17 +551,17 @@ public:
 
     void insert(const keyType1& key1, const keyType2& key2, const valueType& value);
 
-    void pop(const keyType1& key1, const keyType2& key2, const valueType& value);
+    void pop(const keyType1& key1, const keyType2& key2);
     
     void modify(const keyType1& key1, const keyType2& key2, const valueType& value);
 
     void clear();
 
-    valueType get(const keyType1& key1, const keyType2& key2) const;
+    valueType* get(const keyType1& key1, const keyType2& key2);
     
-    std::vector<valueType> traverse() const;
+    std::vector<valueType> traverse();
     
-    std::vector<valueType> traverse(const keyType1& key1) const;
+    std::vector<valueType> traverse(const keyType1& key1);
 };
 ```
 
