@@ -256,7 +256,7 @@ public:
 
     ~TokenScanner();
 
-    TokenScanner(const string& input, char delimiter = ' ');
+    TokenScanner(const std::string& input, char delimiter = ' ');
     
     std::string nextToken();
 
