@@ -10,14 +10,14 @@ typedef std::string string_t;
 class TokenScanner {
 private:
     string_t _buffer;
-    char _delimiter = ' ';
+    char_t _delimiter = ' ';
     int _current = 0;
 public:
     TokenScanner() = default;
 
     ~TokenScanner() = default;
 
-    explicit TokenScanner(string_t input, char delimiter = ' ')
+    explicit TokenScanner(string_t input, char_t delimiter = ' ')
     : _buffer(std::move(input)), _delimiter(delimiter) {}
 
     string_t nextToken();
