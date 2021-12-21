@@ -3,7 +3,7 @@
 
 #include <exception>
 
-class InvalidCommand : std::exception {
+class InvalidCommand : public std::exception {
 private:
     const char* _error_description;
 
