@@ -1,6 +1,6 @@
 #include "token_scanner.h"
 
-std::string TokenScanner::nextToken()
+string_t TokenScanner::nextToken()
 {
     // Skip delimiter
     while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;

@@ -4,9 +4,12 @@
 #include <string>
 #include <utility>
 
+typedef char char_t;
+typedef std::string string_t;
+
 class TokenScanner {
 private:
-    std::string _buffer;
+    string_t _buffer;
     char _delimiter = ' ';
     int _current = 0;
 public:
@@ -14,10 +17,10 @@ public:
 
     ~TokenScanner() = default;
 
-    explicit TokenScanner(std::string input, char delimiter = ' ')
+    explicit TokenScanner(string_t input, char delimiter = ' ')
     : _buffer(std::move(input)), _delimiter(delimiter) {}
 
-    std::string nextToken();
+    string_t nextToken();
 
     bool hasMoreToken();
 };
