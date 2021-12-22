@@ -4,6 +4,10 @@ This is an assignment of SJTU ACM class, a bookstore management system. For more
 
 此爲上海交通大學 ACM 班程式設計大作業之一，一個書店管理系統。如需獲取更多關於此大作業的内容，[點此檢視詳情](https://github.com/ACM-Programming-2021/Bookstore-2021) 。
 
+*P.S.: this project is written with ISOCPP standard.*
+
+*注：此項目使用 ISOCPP 之標準。*
+
 
 
 ## Abstract 摘要訊息
