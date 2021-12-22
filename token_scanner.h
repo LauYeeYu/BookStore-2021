@@ -4,8 +4,13 @@
 #include <string>
 #include <utility>
 
+#include "exception.h"
+
 typedef char char_t;
 typedef std::string string_t;
+
+int stringToInt(const string_t& input);
+double stringToDouble(const string_t& input);
 
 class TokenScanner {
 private:
