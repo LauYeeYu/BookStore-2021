@@ -489,7 +489,7 @@ public:
 #include <iostream>
 #include <fstream>
 
-#include "Unrolled_Linklist.h"
+#include "Unrolled_Linked_list.h"
 
 struct log {
     int num;
@@ -500,7 +500,8 @@ struct log {
 
 class LogGroup {
 private:
-    vector<deal> allDeal;
+    std::fstream _logs;
+    
 public:
     LogGroup();
 
@@ -508,15 +509,13 @@ public:
 
     void report(TokenScanner& line, const LoggingSituation& loggingStatus);
 
-    void add(log& newLog, const loggingSituation& loggingStatus);
+    void add(log& newLog, const LoggingSituation& loggingStatus);
 
     void show(TokenScanner& line, const LoggingSituation& loggingStatus);
 
     void reportFinance();
 
     void reportEmployee();
-
-    void clear();
 };
 ```
 

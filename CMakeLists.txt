@@ -12,4 +12,6 @@ add_executable(code
         account.cpp
         exception.h
         book.h
-        book.cpp)
+        book.cpp
+        log.h
+        log.cpp)

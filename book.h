@@ -8,6 +8,7 @@
 #include "unrolled_linked_list.h"
 #include "token_scanner.h"
 #include "account.h"
+#include "log.h"
 
 struct ISBN {
     char isbn[21];
