@@ -224,13 +224,13 @@ manual
 
 #### 账户相关文件组
 
-account_index : 存储某一账户在Account_store中的位置
+account_index : 存储某一账户在 account 中的位置
 
 account : 存储所有已经注册的账户的相关信息
 
 #### 图书相关文件组
 
-book_index_ISBN : 以ISBN为关键字存储某一图书在 book 中的位置
+book_index_ISBN : 以 ISBN 为关键字存储某一图书在 book 中的位置
 
 book_index_author : 以作者名为关键字存储某一图书在 book 中的位置
 
@@ -272,52 +272,63 @@ public:
 #include <iostream>
 #include <fstream>
 
-#include "Unrolled_linklist.h"
+#include "unrolled_linked_list.h"
+#include "token_scanner.h"
 
 struct UserID {
-    char[31] value;
+    char ID[31];
 
     UserID();
 
-    ~UserID();
+    UserID(const std::string& IDIn);
 
-    UserID(std::string);
-    
+    ~UserID() = default;
+
     bool operator==(const UserID& rhs) const;
 
     bool operator<(const UserID& rhs) const;
 };
 
 struct Account {
-public:
     UserID ID;
-    char[31] password;
-    char[31] name;
+    char password[31];
+    char name[31];
     int priority;
+
+    Account();
+
+    Account(const std::string& IDIn, const std::string& passwordIn,
+            const std::string& nameIn, int priority);
+
+    ~Account() = default;
+    
+    void changePassword(const string_t& newPassword);
 };
 
 class AccountGroup {
 private:
-    UnrolledLinklist<account, UserID, ID_account_map> _id_index;
+    UnrolledLinkedList<UserID, int> _id_index = UnrolledLinkedList<UserID, int>("account_index");
+
+    std::fstream _accounts = std::fstream("account");
 
 public:
     AccountGroup();
 
     ~AccountGroup();
+    
+    void switchUser(TokenScanner& line, LoggingSituation& logStatus);
 
-    void registerUser(TokenScanner& line, const LoggingSituation& logStatus);
+    void registerUser(TokenScanner& line);
 
     void addUser(TokenScanner& line, const LoggingSituation& logStatus);
 
-    void pop(TokenScanner& line, const LoggingSituation& logStatus);
+    void deleteUser(TokenScanner& line, const LoggingSituation& logStatus);
 
     Account find(std::string& userID);
 
     bool count(std::string& userID);
 
     void changePassword(TokenScanner& line, const LoggingSituation& logStatus);
-
-    void clear();
 };
 ```
 
@@ -329,28 +340,35 @@ public:
 class LoggingSituation {
 private:
     int _logged_num = 0; // 存储已登录账户数目
-    std::vector<ID> _logged_in_ID; // 存储已登录的账户ID
-    std::vector<int> logged_priority; // 存储已登录的账户对应权限
-    std::vector<int> _selected_book_id
+    std::vector<std::string> _logged_in_ID; // 存储已登录的账户ID
+    std::vector<int> _logged_in_priority; // 存储已登录的账户对应权限
+    std::vector<int> _selected_book_id;    
 public:
-    LogSituation();
+    LoggingSituation();
 
-    ~LogSituation();
+    ~LoggingSituation();
 
-    void logIn(std::string logID); // 添加一个已登录账户
+    void logIn(std::string logID, int priority, int bookID); // 添加一个已登录账户
 
     void logOut(); // 退出最后一个登录的账户
 
-    std::string back() const; // 返回此时账号ID
+    [[nodiscard]] bool logged(const std::string& ID) const; // 检查是否有此账户登录
+    
+    [[nodiscard]] bool empty() const; // 返回此登录栈是否为空
 
-    int backPriority() const;// 返回此时账号权限
+    [[nodiscard]] const std::string& currentID() const; // 返回此时账号ID
+
+    [[nodiscard]] int backPriority() const; // 返回此时账号权限
+    
+    [[nodiscard]] int getSelected() const; // 返回此时账号所选图书
 };
+
 ```
 
 
 
 
-#### $\bullet$ 图书类
+#### 图书类
 
 ```cpp
 #include <iostream>
@@ -358,7 +376,7 @@ public:
 #include <vector>
 #include "unrolled_linklist.h"
 struct ISBN {
-    char[21] isbn;
+    char isbn[21];
 
     ISBN(const std::string& isbn_in);
 
@@ -368,7 +386,7 @@ struct ISBN {
 };
 
 struct Name {
-  char[61] name;
+  char name[61];
 
   Name(const std::string& name_in);
 
@@ -378,7 +396,7 @@ struct Name {
 };
 
 struct Author {
-  char[61] author;
+  char author[61];
 
   Author(const std::string& author_in);
 
@@ -388,7 +406,7 @@ struct Author {
 };
 
 struct Keyword {
-  char[61] keyword;
+  char keyword[61];
 
   Keyword(const std::string& ketword_in);
 
@@ -398,7 +416,7 @@ struct Keyword {
 };
 
 struct Keywords {
-  char[61] keywords;
+  char keywords[61];
 
   Keywords(const std::string& ketword_in);
 
@@ -464,7 +482,7 @@ public:
 
 
 
-#### $\bullet$ 日志类
+#### 日志类
 
 ```cpp
 #include <iostream>
@@ -475,8 +493,8 @@ public:
 struct log {
     int num;
     bool seal;
-    char[31] operateAccount;    
-    char[61] bookName;
+    char operateAccount[31];    
+    char bookName[61];
 };
 
 class LogGroup {
