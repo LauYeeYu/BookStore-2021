@@ -58,12 +58,12 @@ void Account::changePassword(const string_t& newPassword)
     password[newPassword.length()] = '\0';
 }
 
-void LoggingSituation::logIn(string_t logID, int priority, int bookID)
+void LoggingSituation::logIn(string_t logID, int priority, int bookOffset)
 {
     ++_logged_num;
     _logged_in_ID.emplace_back(std::move(logID));
     _logged_in_priority.push_back(priority);
-    _selected_book_id.push_back(bookID);
+    _selected_book_offset.push_back(bookOffset);
 }
 
 void LoggingSituation::logOut()
@@ -72,7 +72,7 @@ void LoggingSituation::logOut()
     --_logged_num;
     _logged_in_ID.pop_back();
     _logged_in_priority.pop_back();
-    _selected_book_id.pop_back();
+    _selected_book_offset.pop_back();
 }
 
 bool LoggingSituation::logged(const string_t& ID) const
@@ -101,7 +101,7 @@ int LoggingSituation::getPriority() const
 
 int LoggingSituation::getSelected() const
 {
-    return _selected_book_id.back();
+    return _selected_book_offset.back();
 }
 
 AccountGroup::AccountGroup()
@@ -140,7 +140,7 @@ void AccountGroup::switchUser(TokenScanner& line, LoggingSituation& logStatus)
 
     if (!line.hasMoreToken()) {
         if (account.priority > logStatus.getPriority()) {
-            logStatus.logIn(userID, account.priority, 0);
+            logStatus.logIn(userID, account.priority, -1);
         } else {
             throw InvalidCommand("Invalid");
         }
@@ -148,7 +148,7 @@ void AccountGroup::switchUser(TokenScanner& line, LoggingSituation& logStatus)
         string_t password = line.nextToken();
         if (line.hasMoreToken()) throw InvalidCommand("Invalid");
         if (checkPassword(password, account)) {
-            logStatus.logIn(userID, account.priority, 0);
+            logStatus.logIn(userID, account.priority, -1);
         } else {
             throw InvalidCommand("Invalid");
         }

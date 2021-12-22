@@ -69,7 +69,7 @@ private:
 
     std::vector<int> _logged_in_priority; // to store the related priority
 
-    std::vector<int> _selected_book_id; // to store the selected book id
+    std::vector<int> _selected_book_offset; // to store the selected book id
 
 public:
     LoggingSituation() = default;
@@ -86,7 +86,7 @@ public:
      * @param priority
      * @param bookID
      */
-    void logIn(string_t logID, int priority, int bookID);
+    void logIn(string_t logID, int priority, int bookOffset);
 
     /**
      * This function log out the account that is at the top of the
