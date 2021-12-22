@@ -104,6 +104,26 @@ int LoggingSituation::getSelected() const
     return _selected_book_id.back();
 }
 
+AccountGroup::AccountGroup()
+{
+    std::ifstream tester("account");
+    if (tester.good()) { // such file exists
+        tester.close();
+        _accounts.open("account");
+    } else { // no such file
+        tester.close();
+
+        // create file "account"
+        std::ofstream fileCreator("account");
+        fileCreator.close();
+
+        // add default root user
+        _accounts.open("account");
+        Account account("root", "sjtu", "root", 7);
+        _add_user(account);
+    }
+}
+
 void AccountGroup::_add_user(const Account& account)
 {
     _accounts.seekp(0, std::ios::end);
@@ -310,7 +330,6 @@ void AccountGroup::changePassword(TokenScanner& line, const LoggingSituation& lo
 
     delete position;
 }
-
 
 bool checkPassword(const string_t& input, const Account& account) {
     for (int i = 0; i < input.length(); ++i) {

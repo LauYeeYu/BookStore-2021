@@ -117,7 +117,7 @@ class AccountGroup {
 private:
     UnrolledLinkedList<UserID, int> _id_index = UnrolledLinkedList<UserID, int>("account_index");
 
-    std::fstream _accounts = std::fstream("account");
+    std::fstream _accounts;
 
     /**
      * This function add a user in the database.
@@ -126,7 +126,7 @@ private:
     void _add_user(const Account& account);
 
 public:
-    AccountGroup() = default;
+    AccountGroup();
 
     ~AccountGroup() = default;
 
