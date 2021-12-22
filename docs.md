@@ -342,13 +342,13 @@ private:
     int _logged_num = 0; // 存储已登录账户数目
     std::vector<std::string> _logged_in_ID; // 存储已登录的账户ID
     std::vector<int> _logged_in_priority; // 存储已登录的账户对应权限
-    std::vector<int> _selected_book_id;    
+    std::vector<int> _selected_book_offset;    
 public:
     LoggingSituation();
 
     ~LoggingSituation();
 
-    void logIn(std::string logID, int priority, int bookID); // 添加一个已登录账户
+    void logIn(std::string logID, int priority, int bookOffset); // 添加一个已登录账户
 
     void logOut(); // 退出最后一个登录的账户
 
@@ -374,7 +374,10 @@ public:
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "unrolled_linklist.h"
+
+#include "unrolled_linked_list.h"
+#include "token_scanner.h"
+
 struct ISBN {
     char isbn[21];
 
@@ -451,14 +454,14 @@ struct Book {
 
 class BookGroup {
 private:
-    UnrolledLinklist<book_index_ISBN, ISBN, int> ISBN_book_map;
+    UnrolledLinkedList<ISBN, int> _isbn_book_map = UnrolledLinkedList<ISBN, int>("book_index_ISBN");
 
-    UnrolledLinklist<book_index_name, Name, int> name_book_map;
+    DoubleUnrolledLinkedList<Name, ISBN, int> _name_book_map = DoubleUnrolledLinkedList<Name, ISBN, int>("book_index_name");
 
-    UnrolledLinklist<book_index_Author, Author, int> author_book_map;
+    DoubleUnrolledLinkedList<Author, ISBN, int> _author_book_map = DoubleUnrolledLinkedList<Author, ISBN, int>("book_index_name");
 
-    UnrolledLinklist<book_index_keyword, Keyword, int> keywords_book_map;
-    
+    DoubleUnrolledLinkedList<Keyword, ISBN, int> _keywords_book_map = DoubleUnrolledLinkedList<Keyword, ISBN, int>("book_index_name");
+
     int all_book_num = 0;
 
 public:
@@ -475,8 +478,6 @@ public:
     void input(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
     void select(TokenScanner& line, LoggingSituation& loggingStatus, LogGroup& logGroup);
-
-    void clear();
 };
 ```
 
