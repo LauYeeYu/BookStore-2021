@@ -17,6 +17,13 @@ bool TokenScanner::hasMoreToken()
     return _current != _buffer.size();
 }
 
+std::istream& operator>>(std::istream& is, TokenScanner& obj)
+{
+    obj._current = 0;
+    is >> obj._buffer;
+    return is;
+}
+
 int stringToInt(const string_t& input)
 {
     int output = 0;

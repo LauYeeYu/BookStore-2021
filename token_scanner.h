@@ -28,6 +28,8 @@ public:
     string_t nextToken();
 
     bool hasMoreToken();
+
+    friend std::istream& operator>>(std::istream& is, TokenScanner& obj);
 };
 
 #endif //TOKEN_SCANNER
