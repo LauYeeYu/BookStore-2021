@@ -475,7 +475,7 @@ public:
         }
     }
 
-    void pop(const keyType& key)
+    void erase(const keyType& key)
     {
         std::pair<ptr, int> position = _find_exact(key);
         if (position.first == -1) return; // no such node
@@ -1191,7 +1191,7 @@ public:
         }
     }
 
-    void pop(const keyType1& key1, const keyType2& key2)
+    void erase(const keyType1& key1, const keyType2& key2)
     {
         std::pair<ptr, int> position = _find_exact(key1, key2);
         if (position.first == -1) return; // no such node

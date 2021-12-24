@@ -421,16 +421,10 @@ struct Keyword {
 struct Keywords {
   char keywords[61];
 
-  Keywords(const std::string& ketword_in);
-
-  bool operator==(const Keywords&) const;
-
-  bool operator<(const Keywords&) const;
+  Keywords(const std::string& keyword_in);
 };
 
 struct Book {
-    int id;
-
     ISBN isbn;
 
     Name name;
@@ -443,13 +437,13 @@ struct Book {
 
     double price = -1;
 
-    double total_cost = -1;
+    double totalCost = -1;
 
-    Book(int id, const std::string& isbn_in, const std::string& name, const std::string& Author, const std::string& keywords, int quantity, double price, double cost);
+    Book(const std::string& isbn_in, const std::string& name_in, const std::string& author_in, const std::string& keywords_in, int quantity, double price, double cost);
 
-    Book(int id, const std::string& isbn_in)
+    Book(const std::string& isbn_in);
 
-    friend str::ostream& operator<<(std::ostream& os, const Book& book);
+    friend std::ostream& operator<<(std::ostream& os, const Book& book);
 };
 
 class BookGroup {
@@ -471,11 +465,11 @@ public:
 
     Book find(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
-    void change(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
+    void modify(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
-    void output(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
+    void buy(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
-    void input(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
+    void importBook(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
     void select(TokenScanner& line, LoggingSituation& loggingStatus, LogGroup& logGroup);
 };
@@ -492,9 +486,9 @@ public:
 #include "Unrolled_Linked_list.h"
 
 struct log {
-    int num;
-    bool seal;
-    char operateAccount[31];    
+    double sum;
+    bool flag; // true to be income and false to be
+    UserID userID;
     char bookName[61];
 };
 
@@ -516,6 +510,8 @@ public:
     void reportFinance();
 
     void reportEmployee();
+    
+    void showLog(TokenScanner& line);
 };
 ```
 
@@ -539,7 +535,7 @@ public:
 
     void insert(const keyType& key, const valueType& value);
 
-    void pop(const keyType& key);
+    void erase(const keyType& key);
 
     void modify(const keyType& key, const valueType& value);
 
@@ -569,7 +565,7 @@ public:
 
     void insert(const keyType1& key1, const keyType2& key2, const valueType& value);
 
-    void pop(const keyType1& key1, const keyType2& key2);
+    void erase(const keyType1& key1, const keyType2& key2);
     
     void modify(const keyType1& key1, const keyType2& key2, const valueType& value);
 
