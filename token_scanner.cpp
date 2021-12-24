@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "token_scanner.h"
 
 string_t TokenScanner::nextToken()
@@ -17,11 +19,10 @@ bool TokenScanner::hasMoreToken()
     return _current != _buffer.size();
 }
 
-std::istream& operator>>(std::istream& is, TokenScanner& obj)
+void TokenScanner::newLine()
 {
-    obj._current = 0;
-    is >> obj._buffer;
-    return is;
+    _current = 0;
+    getline(std::cin, _buffer);
 }
 
 int stringToInt(const string_t& input)

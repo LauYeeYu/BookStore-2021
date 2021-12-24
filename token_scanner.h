@@ -25,11 +25,11 @@ public:
     explicit TokenScanner(string_t input, char_t delimiter = ' ')
     : _buffer(std::move(input)), _delimiter(delimiter) {}
 
+    void newLine();
+
     string_t nextToken();
 
     bool hasMoreToken();
-
-    friend std::istream& operator>>(std::istream& is, TokenScanner& obj);
 };
 
 #endif //TOKEN_SCANNER
