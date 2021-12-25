@@ -244,6 +244,8 @@ book : 存储所有图书的相关信息
 
 log : 存储所有操作日志
 
+finance_log : 仅储存财务记录
+
 #### token scanner 类
 
 ```CPP
@@ -487,7 +489,12 @@ public:
 
 #include "Unrolled_Linked_list.h"
 
-struct log {
+struct FinanceLog {
+    double sum;
+    bool flag; // true to be income and false to be
+};
+
+struct Log {
     double sum;
     bool flag; // true to be income and false to be
     UserID userID;
@@ -498,6 +505,8 @@ class LogGroup {
 private:
     std::fstream _logs;
     
+    std::fstream _finance_logs;
+    
 public:
     LogGroup();
 
@@ -505,8 +514,10 @@ public:
 
     void report(TokenScanner& line, const LoggingSituation& loggingStatus);
 
-    void add(log& newLog, const LoggingSituation& loggingStatus);
+    void add(FinanceLog& newLog, const LoggingSituation& loggingStatus);
 
+    void addFinanceLog(FinanceLog& newLog);
+    
     void show(TokenScanner& line, const LoggingSituation& loggingStatus);
 
     void reportFinance();
