@@ -13,6 +13,17 @@ string_t TokenScanner::nextToken()
     return _buffer.substr(start, _current - start);
 }
 
+string_t TokenScanner::peekNextToken()
+{
+    // Skip delimiter
+    while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;
+    int end = _current;
+
+    // Find another delimiter
+    while (end < _buffer.size() && _buffer[end] != _delimiter) ++end;
+    return _buffer.substr(_current, end - _current);
+}
+
 bool TokenScanner::hasMoreToken()
 {
     while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;

@@ -259,6 +259,8 @@ public:
     TokenScanner(const std::string& input, char delimiter = ' ');
     
     std::string nextToken();
+    
+    std::string peekNextToken();
 
     bool hasMoreToken();
 };
@@ -463,7 +465,7 @@ public:
 
     ~BookGroup();
 
-    Book find(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
+    Book find(const ISBN& isbn);
 
     void modify(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 

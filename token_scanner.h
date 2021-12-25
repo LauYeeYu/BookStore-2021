@@ -29,6 +29,8 @@ public:
 
     string_t nextToken();
 
+    string_t peekNextToken();
+
     bool hasMoreToken();
 };
 
