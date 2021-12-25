@@ -15,7 +15,7 @@ UserID::UserID(const string_t& IDIn)
 
 bool UserID::operator==(const UserID& rhs) const
 {
-    for (int i = 0; i < 65; ++i) {
+    for (int i = 0; i < 31; ++i) {
         if (this->ID[i] == '\0' && rhs.ID[i] == '\0') return true;
         if (this->ID[i] != rhs.ID[i]) return false;
     }
@@ -24,7 +24,7 @@ bool UserID::operator==(const UserID& rhs) const
 
 bool UserID::operator<(const UserID& rhs) const
 {
-    for (int i = 0; i < 65; ++i) {
+    for (int i = 0; i < 31; ++i) {
         if (this->ID[i] == '\0' && rhs.ID[i] == '\0') return false;
         if (this->ID[i] != rhs.ID[i]) return (this->ID[i] < rhs.ID[i]);
     }
@@ -64,6 +64,11 @@ void LoggingSituation::logIn(string_t logID, int priority, int bookOffset)
     _logged_in_ID.emplace_back(std::move(logID));
     _logged_in_priority.push_back(priority);
     _selected_book_offset.push_back(bookOffset);
+}
+
+void LoggingSituation::select(int bookOffset)
+{
+    _selected_book_offset.back() = bookOffset;
 }
 
 void LoggingSituation::logOut()
@@ -230,7 +235,7 @@ void AccountGroup::deleteUser(TokenScanner& line, const LoggingSituation& logSta
     if (logStatus.logged(userID)) throw InvalidCommand("Invalid");
 
     // delete user
-    _id_index.pop(ID);
+    _id_index.erase(ID);
 }
 
 Account AccountGroup::find(string_t& userID)
@@ -343,7 +348,7 @@ bool checkPassword(const string_t& input, const Account& account) {
 
 bool validUserID(const string_t& userID)
 {
-    if (userID.length() > 30) throw InvalidCommand("Invalid");
+    if (userID.length() > 30) return false;
     for (char_t c : userID) {
         if ((c < 48) || (c > 57 && c < 65)
          || (c > 90 && c < 95) || (c == 96) || (c > 122)) {
@@ -355,7 +360,7 @@ bool validUserID(const string_t& userID)
 
 bool validPassword(const string_t& password)
 {
-    if (password.length() > 30) throw InvalidCommand("Invalid");
+    if (password.length() > 30) return false;
     for (char_t c : password) {
         if ((c < 48) || (c > 57 && c < 65)
             || (c > 90 && c < 95) || (c == 96) || (c > 122)) {
@@ -367,7 +372,7 @@ bool validPassword(const string_t& password)
 
 bool validUserName(const string_t& userName)
 {
-    if (userName.length() > 30) throw InvalidCommand("Invalid");
+    if (userName.length() > 30) return false;
     for (char_t c : userName) {
         if (c < 33 || c > 126) return false;
     }

@@ -95,6 +95,13 @@ public:
     void logOut();
 
     /**
+     * This function change the selected book of the user at the top
+     * of the logging stack.
+     * @param bookOffset
+     */
+    void select(int bookOffset);
+
+    /**
      * This function check whether such ID is logged in.
      * @param ID the ID to be checked whether it is logged in.
      * @return the boolean of whether such account is logged in.
