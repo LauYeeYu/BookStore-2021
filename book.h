@@ -103,10 +103,10 @@ private:
     = DoubleUnrolledLinkedList<Name, ISBN, int>("book_index_name");
 
     DoubleUnrolledLinkedList<Author, ISBN, int> _author_book_map
-    = DoubleUnrolledLinkedList<Author, ISBN, int>("book_index_name");
+    = DoubleUnrolledLinkedList<Author, ISBN, int>("book_index_author");
 
     DoubleUnrolledLinkedList<Keyword, ISBN, int> _keywords_book_map
-    = DoubleUnrolledLinkedList<Keyword, ISBN, int>("book_index_name");
+    = DoubleUnrolledLinkedList<Keyword, ISBN, int>("book_index_keyword");
 
     std::fstream _books;
 
