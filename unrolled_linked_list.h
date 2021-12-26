@@ -141,7 +141,7 @@ private:
         _list.read(reinterpret_cast<char*>(&tmp), sizeof(_main_node));
 
         // Searching for the approximate place (only the main node)
-        while (key < tmp.key1 && tmp.pre != 0) {
+        while (key < tmp.key && tmp.pre != 0) {
             Ptr = tmp.pre;
             _list.seekg(Ptr);
             _list.read(reinterpret_cast<char*>(&tmp), sizeof(_main_node));
@@ -462,6 +462,7 @@ public:
             // Put the new node
             _node newNode{key, value};
             _list.seekp(mainNode.target + (position.second + 1) * sizeof(_node));
+            _list.write(reinterpret_cast<char*>(&newNode), sizeof(_node));
 
             // Change the main node
             ++(mainNode.count);
