@@ -33,7 +33,7 @@ bool TokenScanner::hasMoreToken()
 void TokenScanner::newLine()
 {
     _current = 0;
-    getline(std::cin, _buffer);
+    std::getline(std::cin, _buffer);
 }
 
 int stringToInt(const string_t& input)

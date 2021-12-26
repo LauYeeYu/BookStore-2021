@@ -38,6 +38,11 @@ void processLine(AccountGroup& accounts, BookGroup& books,
     TokenScanner line;
     line.newLine();
 
+    if (!std::cin) {
+        flush(accounts, books, logs);
+        exit(0);
+    }
+
     if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
 
     string_t command = line.nextToken();
