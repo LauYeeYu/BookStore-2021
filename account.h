@@ -207,6 +207,8 @@ public:
      * @param logStatus
      */
     void changePassword(TokenScanner& line, const LoggingSituation& logStatus);
+
+    void flush();
 };
 
 bool checkPassword(const string_t& input, const Account& account);

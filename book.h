@@ -192,6 +192,8 @@ public:
      * @param logGroup
      */
     void select(TokenScanner& line, LoggingSituation& loggingStatus, LogGroup& logGroup);
+
+    void flush();
 };
 
 bool validISBN(const string_t& ISBN);

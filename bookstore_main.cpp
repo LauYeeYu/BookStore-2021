@@ -12,6 +12,8 @@
 void processLine(AccountGroup& accounts, BookGroup& books,
                  LogGroup& logs, LoggingSituation& logInStack);
 
+void flush(AccountGroup& accounts, BookGroup& books, LogGroup& logs);
+
 void init();
 
 int main()
@@ -40,6 +42,7 @@ void processLine(AccountGroup& accounts, BookGroup& books,
 
     string_t command = line.nextToken();
     if (command == "quit" || command == "exit") {
+        flush(accounts, books, logs);
         exit(0);
     } else if (command == "su") {
         accounts.switchUser(line, logInStack);
@@ -108,4 +111,11 @@ void init()
         creator.close();
     }
     tester.close();
+}
+
+void flush(AccountGroup& accounts, BookGroup& books, LogGroup& logs)
+{
+    accounts.flush();
+    books.flush();
+    logs.flush();
 }

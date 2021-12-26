@@ -52,6 +52,8 @@ public:
     void reportEmployee();
 
     void showLog(TokenScanner& line);
+
+    void flush();
 };
 
 #endif //LOG

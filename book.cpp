@@ -461,6 +461,15 @@ void BookGroup::select(TokenScanner& line, LoggingSituation& loggingStatus, LogG
     loggingStatus.select(offset);
 }
 
+void BookGroup::flush()
+{
+    _books.flush();
+    _isbn_book_map.flush();
+    _author_book_map.flush();
+    _keywords_book_map.flush();
+    _name_book_map.flush();
+}
+
 bool validISBN(const string_t& ISBN)
 {
     if (ISBN.length() > 20) return false;

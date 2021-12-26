@@ -601,6 +601,11 @@ public:
         }
         return std::move(values);
     }
+
+    void flush()
+    {
+        _list.flush();
+    }
 };
 
 /**
@@ -1372,6 +1377,11 @@ public:
             _list.read(reinterpret_cast<char*>(&mainNode), sizeof(mainNode));
         }
         return std::move(values);
+    }
+
+    void flush()
+    {
+        _list.flush();
     }
 };
 

@@ -336,6 +336,12 @@ void AccountGroup::changePassword(TokenScanner& line, const LoggingSituation& lo
     delete position;
 }
 
+void AccountGroup::flush()
+{
+    _accounts.flush();
+    _id_index.flush();
+}
+
 bool checkPassword(const string_t& input, const Account& account) {
     for (int i = 0; i < input.length(); ++i) {
         if (input[i] != account.password[i]) {

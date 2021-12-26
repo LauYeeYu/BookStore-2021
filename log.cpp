@@ -89,3 +89,9 @@ void LogGroup::show(TokenScanner& line, const LoggingSituation& loggingStatus)
         std::cout << std::endl;
     }
 }
+
+void LogGroup::flush()
+{
+    _finance_logs.flush();
+    _logs.flush();
+}
