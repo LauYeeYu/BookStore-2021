@@ -307,7 +307,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
 
             // keywords
             if (bookToModify.keywords.keywords[0] != '\0') {
-                TokenScanner keywordSeparator;
+                TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords), '|');
                 Keyword keywordBuffer;
                 while (keywordSeparator.hasMoreToken()) {
                     keywordBuffer = Keyword(keywordSeparator.nextToken());
@@ -338,7 +338,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
 
         } else if (bookParameter.type == keywords) {
             if (bookToModify.keywords.keywords[0] != '\0') {
-                TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords));
+                TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords), '|');
                 Keyword keywordBuffer;
                 while (keywordSeparator.hasMoreToken()) {
                     keywordBuffer = Keyword(keywordSeparator.nextToken());
@@ -347,11 +347,10 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             }
 
             bookToModify.keywords = Keywords(bookParameter.content);
-            TokenScanner newKeywordSeparator(bookParameter.content);
-            Keyword newKeywordBuffer;
+            TokenScanner newKeywordSeparator(bookParameter.content, '|');
             while (newKeywordSeparator.hasMoreToken()) {
-                newKeywordBuffer = Keyword(newKeywordSeparator.nextToken());
-                _keywords_book_map.insert(newKeywordBuffer, bookToModify.isbn, loggingStatus.getSelected());
+                _keywords_book_map.insert(Keyword(newKeywordSeparator.nextToken()),
+                                          bookToModify.isbn, loggingStatus.getSelected());
             }
 
         } else if (bookParameter.type == price) {
