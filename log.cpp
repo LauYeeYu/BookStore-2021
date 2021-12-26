@@ -49,6 +49,9 @@ void LogGroup::show(TokenScanner& line, const LoggingSituation& loggingStatus)
     // skip the word "finance"
     line.nextToken();
 
+    double income = 0;
+    double expenditure = 0;
+
     if (line.hasMoreToken()) {
         string_t limitString = line.nextToken();
         if (line.hasMoreToken()) throw InvalidCommand("Invalid");
@@ -61,17 +64,12 @@ void LogGroup::show(TokenScanner& line, const LoggingSituation& loggingStatus)
         const int end = _finance_logs.tellp();
         if (end / sizeof(FinanceLog) < limit) throw InvalidCommand("Invalid");
         FinanceLog financeLog;
-        std::cout << std::fixed << std::setprecision(2);
         for (int i = end - limit * sizeof(FinanceLog); i < end; i += sizeof(FinanceLog)) {
             _finance_logs.seekg(i);
             _finance_logs.read(reinterpret_cast<char*>(&financeLog), sizeof(FinanceLog));
-            if (financeLog.flag) {
-                std::cout << "+ " << financeLog.sum << " ";
-            } else {
-                std::cout << "- " << financeLog.sum << " ";
-            }
+            if (financeLog.flag) income += financeLog.sum;
+            else expenditure += financeLog.sum;
         }
-        std::cout << std::endl;
     } else {
         _finance_logs.seekp(0, std::ios::end);
         const int end = _finance_logs.tellp();
@@ -80,14 +78,11 @@ void LogGroup::show(TokenScanner& line, const LoggingSituation& loggingStatus)
         for (int i = 0; i < end; i += sizeof(FinanceLog)) {
             _finance_logs.seekg(i);
             _finance_logs.read(reinterpret_cast<char*>(&financeLog), sizeof(FinanceLog));
-            if (financeLog.flag) {
-                std::cout << "+ " << financeLog.sum << " ";
-            } else {
-                std::cout << "- " << financeLog.sum << " ";
-            }
+            if (financeLog.flag) income += financeLog.sum;
+            else expenditure += financeLog.sum;
         }
-        std::cout << std::endl;
     }
+    std::cout << std::fixed << std::setprecision(2) << "+ " << income << " - " << expenditure << std::endl;
 }
 
 void LogGroup::flush()
