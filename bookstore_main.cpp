@@ -12,8 +12,11 @@
 void processLine(AccountGroup& accounts, BookGroup& books,
                  LogGroup& logs, LoggingSituation& logInStack);
 
+void init();
+
 int main()
 {
+    init();
     AccountGroup accounts;
     BookGroup books;
     LogGroup logs;
@@ -61,10 +64,48 @@ void processLine(AccountGroup& accounts, BookGroup& books,
     } else if (command == "import") {
         books.importBook(line, logInStack, logs);
     } else if (command == "report") {
-        logs.report(line, logInStack);
+        //logs.report(line, logInStack);
     } else if (command == "log") {
-        logs.showLog();
+        //logs.showLog(line);
     } else {
         throw InvalidCommand("Invalid");
     }
+}
+
+void init()
+{
+    std::ifstream tester("account_index");
+    if (!(tester.good())) {
+        std::ofstream creator("account_index");
+        creator.close();
+    }
+    tester.close();
+
+    tester.open("book_index_ISBN");
+    if (!(tester.good())) {
+        std::ofstream creator("book_index_ISBN");
+        creator.close();
+    }
+    tester.close();
+
+    tester.open("book_index_author");
+    if (!(tester.good())) {
+        std::ofstream creator("book_index_author");
+        creator.close();
+    }
+    tester.close();
+
+    tester.open("book_index_name");
+    if (!(tester.good())) {
+        std::ofstream creator("book_index_name");
+        creator.close();
+    }
+    tester.close();
+
+    tester.open("book_index_keyword");
+    if (!(tester.good())) {
+        std::ofstream creator("book_index_keyword");
+        creator.close();
+    }
+    tester.close();
 }

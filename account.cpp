@@ -144,7 +144,7 @@ void AccountGroup::switchUser(TokenScanner& line, LoggingSituation& logStatus)
     Account account = find(userID);
 
     if (!line.hasMoreToken()) {
-        if (account.priority > logStatus.getPriority()) {
+        if (account.priority < logStatus.getPriority()) {
             logStatus.logIn(userID, account.priority, -1);
         } else {
             throw InvalidCommand("Invalid");

@@ -188,6 +188,12 @@ Book BookGroup::find(int offset)
 
 void BookGroup::show(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup)
 {
+    // the case of finance
+    if (line.peekNextToken() == "finance") {
+        logGroup.show(line, loggingStatus);
+        return;
+    }
+
     if (loggingStatus.empty()) throw InvalidCommand("Invalid");
 
     std::vector<int> books;
@@ -241,10 +247,6 @@ void BookGroup::show(TokenScanner& line, const LoggingSituation& loggingStatus, 
 
 void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup)
 {
-    if (line.peekNextToken() == "show") {
-        logGroup.show(line, loggingStatus);
-        return;
-    }
     if (loggingStatus.getPriority() < 3) throw InvalidCommand("Invalid");
     if (loggingStatus.getSelected() == -1) throw InvalidCommand("Invalid");
     if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
@@ -412,47 +414,25 @@ void BookGroup::importBook(TokenScanner& line, const LoggingSituation& loggingSt
 {
     if (loggingStatus.getPriority() < 3) throw InvalidCommand("Invalid");
 
-    // read and check the isbn
-    if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
-    string_t ISBNString = line.nextToken();
-    if (!validISBN(ISBNString)) throw InvalidCommand("Invalid");
-    int* offset = _isbn_book_map.get(ISBN(ISBNString));
-    if (offset == nullptr) throw InvalidCommand("Invalid");
+    if (loggingStatus.getSelected() == -1) throw InvalidCommand("Invalid");
 
     // read the quantity
-    if (!line.hasMoreToken()) {
-        delete offset;
-        throw InvalidCommand("Invalid");
-    }
+    if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
     string_t quantityString = line.nextToken();
-    for (char_t c : quantityString) {
-        if (c < 48 || c > 57) {
-            delete offset;
-            throw InvalidCommand("Invalid");
-        }
-    }
     int quantity = stringToInt(quantityString);
 
     // read the total cost
-    if (!line.hasMoreToken()) {
-        delete offset;
-        throw InvalidCommand("Invalid");
-    }
+    if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
     string_t totalCostString = line.nextToken();
-    if (line.hasMoreToken() || !validPrice(totalCostString)) {
-        delete offset;
-        throw InvalidCommand("Invalid");
-    }
     double totalCost = stringToDouble(totalCostString);
 
     // read the book data
     Book book;
-    _books.seekg(*offset);
+    _books.seekg(loggingStatus.getSelected());
     _books.read(reinterpret_cast<char*>(&book), sizeof(Book));
     book.quantity += quantity;
-    _books.seekp(*offset);
+    _books.seekp(loggingStatus.getSelected());
     _books.write(reinterpret_cast<const char*>(&book), sizeof(Book));
-    delete offset;
     FinanceLog financeLog{totalCost, false};
     logGroup.addFinanceLog(financeLog);
 }
