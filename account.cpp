@@ -323,6 +323,11 @@ void AccountGroup::changePassword(TokenScanner& line, const LoggingSituation& lo
 
         // check the second password
         string_t password2 = line.nextToken();
+        if (line.hasMoreToken()) {
+            delete position;
+            position = nullptr;
+            throw InvalidCommand("Invalid");
+        }
         if (!validPassword(password2)) {
             delete position;
             position = nullptr;
