@@ -9,10 +9,8 @@
 #include "book.h"
 #include "log.h"
 
-void processLine(AccountGroup& accounts, BookGroup& books,
+bool processLine(AccountGroup& accounts, BookGroup& books,
                  LogGroup& logs, LoggingSituation& logInStack);
-
-void flush(AccountGroup& accounts, BookGroup& books, LogGroup& logs);
 
 void init();
 
@@ -25,30 +23,26 @@ int main()
     LoggingSituation logInStack;
     while (true) {
         try {
-            processLine(accounts, books, logs, logInStack);
+            if (processLine(accounts, books, logs, logInStack)) return 0;
         } catch (std::exception& ex) {
             std::cout << ex.what() << std::endl;
         }
     }
 }
 
-void processLine(AccountGroup& accounts, BookGroup& books,
+bool processLine(AccountGroup& accounts, BookGroup& books,
                  LogGroup& logs, LoggingSituation& logInStack)
 {
     TokenScanner line;
     line.newLine();
 
-    if (!std::cin) {
-        flush(accounts, books, logs);
-        exit(0);
-    }
+    if (!std::cin) return true;
 
     if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
 
     string_t command = line.nextToken();
     if (command == "quit" || command == "exit") {
-        flush(accounts, books, logs);
-        exit(0);
+        return true;
     } else if (command == "su") {
         accounts.switchUser(line, logInStack);
     } else if (command == "logout") {
@@ -78,6 +72,7 @@ void processLine(AccountGroup& accounts, BookGroup& books,
     } else {
         throw InvalidCommand("Invalid");
     }
+    return false;
 }
 
 void init()
@@ -116,11 +111,4 @@ void init()
         creator.close();
     }
     tester.close();
-}
-
-void flush(AccountGroup& accounts, BookGroup& books, LogGroup& logs)
-{
-    accounts.flush();
-    books.flush();
-    logs.flush();
 }
