@@ -263,7 +263,12 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
         toModify.emplace_back(processParameter(token));
         if (toModify.back().type == isbn) {
             if (existISBN) throw InvalidCommand("Invalid");
-            else existISBN = true;
+            else {
+                int* offset = _isbn_book_map.get(ISBN(toModify.back().content));
+                if (offset != nullptr) throw InvalidCommand("Invalid");
+                delete offset;
+                existISBN = true;
+            }
         } else if (toModify.back().type == name) {
             if (existName) throw InvalidCommand("Invalid");
             else existName = true;
