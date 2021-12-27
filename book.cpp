@@ -314,7 +314,8 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
 
             // keywords
             if (bookToModify.keywords.keywords[0] != '\0') {
-                TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords), '|');
+                TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords),
+                                              '|', TokenScanner::single);
                 Keyword keywordBuffer;
                 while (keywordSeparator.hasMoreToken()) {
                     keywordBuffer = Keyword(keywordSeparator.nextToken());
@@ -345,7 +346,8 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
 
         } else if (bookParameter.type == keywords) {
             if (bookToModify.keywords.keywords[0] != '\0') {
-                TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords), '|');
+                TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords),
+                                              '|', TokenScanner::single);
                 Keyword keywordBuffer;
                 while (keywordSeparator.hasMoreToken()) {
                     keywordBuffer = Keyword(keywordSeparator.nextToken());
@@ -354,7 +356,8 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             }
 
             bookToModify.keywords = Keywords(bookParameter.content);
-            TokenScanner newKeywordSeparator(bookParameter.content, '|');
+            TokenScanner newKeywordSeparator(bookParameter.content,
+                                             '|', TokenScanner::single);
             while (newKeywordSeparator.hasMoreToken()) {
                 _keywords_book_map.insert(Keyword(newKeywordSeparator.nextToken()),
                                           bookToModify.isbn, loggingStatus.getSelected());
@@ -515,7 +518,7 @@ bool validKeyword(const string_t& keyword)
 bool validKeywords(const string_t& keywords)
 {
     if (keywords.length() > 60) return false;
-    TokenScanner keywordSeparator(keywords, '|');
+    TokenScanner keywordSeparator(keywords, '|', TokenScanner::single);
     string_t keyword;
     std::set<string_t> keywordSet;
     while (keywordSeparator.hasMoreToken()) {
