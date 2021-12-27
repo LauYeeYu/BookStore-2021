@@ -38,7 +38,7 @@ bool processLine(AccountGroup& accounts, BookGroup& books,
 
     if (!std::cin) return true;
 
-    if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
+    if (!line.hasMoreToken()) return false;
 
     string_t command = line.nextToken();
     if (command == "quit" || command == "exit") {
