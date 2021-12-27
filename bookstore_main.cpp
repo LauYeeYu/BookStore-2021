@@ -46,6 +46,7 @@ bool processLine(AccountGroup& accounts, BookGroup& books,
     } else if (command == "su") {
         accounts.switchUser(line, logInStack);
     } else if (command == "logout") {
+        if (line.hasMoreToken()) throw InvalidCommand("Invalid");
         logInStack.logOut();
     } else if (command == "register") {
         accounts.registerUser(line);
