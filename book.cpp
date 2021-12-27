@@ -433,6 +433,7 @@ void BookGroup::importBook(TokenScanner& line, const LoggingSituation& loggingSt
     // read the total cost
     if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
     string_t totalCostString = line.nextToken();
+    if (line.hasMoreToken()) throw InvalidCommand("Invalid");
     double totalCost = stringToDouble(totalCostString);
 
     // read the book data

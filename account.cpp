@@ -221,7 +221,7 @@ void AccountGroup::deleteUser(TokenScanner& line, const LoggingSituation& logSta
     // check user ID
     if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
     string_t userID = line.nextToken();
-    if (!validUserID(userID)) throw InvalidCommand("Invalid");
+    if (line.hasMoreToken() || !validUserID(userID)) throw InvalidCommand("Invalid");
 
     // check whether this user exists
     // (to reduce the time of finding the same account,
