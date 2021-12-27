@@ -42,6 +42,7 @@ bool processLine(AccountGroup& accounts, BookGroup& books,
 
     string_t command = line.nextToken();
     if (command == "quit" || command == "exit") {
+        if (line.hasMoreToken())  throw InvalidCommand("Invalid");
         return true;
     } else if (command == "su") {
         accounts.switchUser(line, logInStack);
