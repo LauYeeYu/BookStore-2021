@@ -4,29 +4,48 @@
 
 string_t TokenScanner::nextToken()
 {
-    // Skip delimiter
-    while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;
-    int start = _current;
+    if (_mode == multiple) {
+        // Skip delimiter
+        while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;
+        int start = _current;
 
-    // Find another delimiter
-    while (_current < _buffer.size() && _buffer[_current] != _delimiter) ++_current;
-    return _buffer.substr(start, _current - start);
+        // Find another delimiter
+        while (_current < _buffer.size() && _buffer[_current] != _delimiter) ++_current;
+        return _buffer.substr(start, _current - start);
+    } else { // _mode == single
+        int start = _current;
+
+        // Find another delimiter
+        while (_current < _buffer.size() && _buffer[_current] != _delimiter) ++_current;
+        ++_current;
+        return _buffer.substr(start, _current - start - 1);
+    }
 }
 
 string_t TokenScanner::peekNextToken()
 {
-    // Skip delimiter
-    while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;
-    int end = _current;
+    if (_mode == multiple) {
+        // Skip delimiter
+        while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;
+        int end = _current;
 
-    // Find another delimiter
-    while (end < _buffer.size() && _buffer[end] != _delimiter) ++end;
-    return _buffer.substr(_current, end - _current);
+        // Find another delimiter
+        while (end < _buffer.size() && _buffer[end] != _delimiter) ++end;
+        return _buffer.substr(_current, end - _current);
+    } else { // _mode == single
+        int end = _current;
+
+        // Find another delimiter
+        while (end < _buffer.size() && _buffer[end] != _delimiter) ++end;
+        return _buffer.substr(_current, end - _current);
+    }
 }
 
 bool TokenScanner::hasMoreToken()
 {
-    while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;
+    if (_mode == multiple) {
+        while (_current < _buffer.size() && _buffer[_current] == _delimiter) ++_current;
+    }
     return _current != _buffer.size();
 }
 
