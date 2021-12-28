@@ -548,7 +548,7 @@ bool validPrice(const string_t& price)
 
 BookParameter processParameter(const string_t& token)
 {
-    if (token[0] != '-') throw InvalidCommand("Invalid");
+    if (token.length() < 2 || token[0] != '-') throw InvalidCommand("Invalid");
 
     if (token[1] == 'I') {
         if (token.length() < 7) throw InvalidCommand("Invalid");

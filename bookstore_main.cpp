@@ -40,7 +40,7 @@ bool processLine(AccountGroup& accounts, BookGroup& books,
 
     if (!line.hasMoreToken()) return false;
 
-    if (line.totalLength() > 1024)  throw InvalidCommand("Invalid");
+    if (line.totalLength() > 1024) throw InvalidCommand("Invalid");
 
     string_t command = line.nextToken();
     if (command == "quit" || command == "exit") {
