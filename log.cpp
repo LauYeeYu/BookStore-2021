@@ -100,3 +100,8 @@ void LogGroup::add(Log& newLog, const LoggingSituation& loggingStatus)
 {
     throw InvalidCommand("Invalid");
 }
+
+void LogGroup::showLog(TokenScanner& line)
+{
+    throw InvalidCommand("Invalid");
+}
