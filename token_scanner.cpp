@@ -55,6 +55,11 @@ void TokenScanner::newLine()
     std::getline(std::cin, _buffer);
 }
 
+size_t TokenScanner::totalLength()
+{
+    return _buffer.length();
+}
+
 int stringToInt(const string_t& input)
 {
     int output = 0;

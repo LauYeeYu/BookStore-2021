@@ -41,6 +41,8 @@ public:
 
     string_t peekNextToken();
 
+    size_t totalLength();
+
     bool hasMoreToken();
 };
 
