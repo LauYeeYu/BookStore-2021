@@ -359,7 +359,7 @@ bool checkPassword(const string_t& input, const Account& account) {
 
 bool validUserID(const string_t& userID)
 {
-    if (userID.length() > 30) return false;
+    if (userID.empty() || userID.length() > 30) return false;
     for (char_t c : userID) {
         if ((c < 48) || (c > 57 && c < 65)
          || (c > 90 && c < 95) || (c == 96) || (c > 122)) {
@@ -371,7 +371,7 @@ bool validUserID(const string_t& userID)
 
 bool validPassword(const string_t& password)
 {
-    if (password.length() > 30) return false;
+    if (password.empty() || password.length() > 30) return false;
     for (char_t c : password) {
         if ((c < 48) || (c > 57 && c < 65)
             || (c > 90 && c < 95) || (c == 96) || (c > 122)) {
@@ -383,7 +383,7 @@ bool validPassword(const string_t& password)
 
 bool validUserName(const string_t& userName)
 {
-    if (userName.length() > 30) return false;
+    if (userName.empty() || userName.length() > 30) return false;
     for (char_t c : userName) {
         if (c < 33 || c > 126) return false;
     }

@@ -482,7 +482,7 @@ void BookGroup::flush()
 
 bool validISBN(const string_t& ISBN)
 {
-    if (ISBN.length() > 20) return false;
+    if (ISBN.empty() || ISBN.length() > 20) return false;
     for (char_t c : ISBN) {
         if (c < 33 || c > 126) return false;
     }
@@ -491,7 +491,7 @@ bool validISBN(const string_t& ISBN)
 
 bool validBookName(const string_t& name)
 {
-    if (name.length() > 60) return false;
+    if (name.empty() || name.length() > 60) return false;
     for (char_t c : name) {
         if (c < 33 || c > 126 || c == '\"') return false;
     }
@@ -500,7 +500,7 @@ bool validBookName(const string_t& name)
 
 bool validAuthor(const string_t& author)
 {
-    if (author.length() > 60) return false;
+    if (author.empty() || author.length() > 60) return false;
     for (char_t c : author) {
         if (c < 33 || c > 126 || c == '\"') return false;
     }
@@ -509,7 +509,7 @@ bool validAuthor(const string_t& author)
 
 bool validKeyword(const string_t& keyword)
 {
-    if (keyword.length() > 60) return false;
+    if (keyword.empty() || keyword.length() > 60) return false;
     for (char_t c : keyword) {
         if (c < 33 || c > 126 || c == '\"') return false;
     }
@@ -518,7 +518,7 @@ bool validKeyword(const string_t& keyword)
 
 bool validKeywords(const string_t& keywords)
 {
-    if (keywords.length() > 60) return false;
+    if (keywords.empty() || keywords.length() > 60) return false;
     TokenScanner keywordSeparator(keywords, '|', TokenScanner::single);
     string_t keyword;
     std::set<string_t> keywordSet;
@@ -533,7 +533,7 @@ bool validKeywords(const string_t& keywords)
 
 bool validPrice(const string_t& price)
 {
-    if (price.length() > 13) return false;
+    if (price.empty() || price.length() > 13) return false;
     bool point = false;
     for (char_t c : price) {
         if (c == '.') {
