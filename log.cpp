@@ -90,3 +90,13 @@ void LogGroup::flush()
     _finance_logs.flush();
     _logs.flush();
 }
+
+void LogGroup::report(TokenScanner& line, const LoggingSituation& loggingStatus)
+{
+    throw InvalidCommand("Invalid");
+}
+
+void LogGroup::add(Log& newLog, const LoggingSituation& loggingStatus)
+{
+    throw InvalidCommand("Invalid");
+}
