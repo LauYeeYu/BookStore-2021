@@ -62,6 +62,8 @@ size_t TokenScanner::totalLength()
 
 int stringToInt(const string_t& input)
 {
+    if (input.length() > 10) throw InvalidCommand("Invalid");
+    if (input.length() == 10 && input > "2147483647") throw InvalidCommand("Invalid");
     int output = 0;
     for (const char c : input) {
         if (c < 48 || c > 57) throw InvalidCommand("Invalid");
