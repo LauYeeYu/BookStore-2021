@@ -119,9 +119,7 @@ public:
 
     /**
      * This function search a book with ISBN.
-     * @param line
-     * @param loggingStatus
-     * @param logGroup
+     * @param offset
      * @return the book data
      */
     Book find(int offset);

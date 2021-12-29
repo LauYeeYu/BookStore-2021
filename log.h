@@ -4,8 +4,7 @@
 #include <iostream>
 #include <fstream>
 
-#include "unrolled_linked_list.h"
-#include "token_scanner.h"
+class BookGroup;
 
 struct FinanceLog {
     double sum;
@@ -14,13 +13,26 @@ struct FinanceLog {
 };
 
 struct Log {
+    enum Behaviour {buy, create, modify, import};
+
+    Behaviour behaviour;
+
     double sum;
+
+    int quantity;
 
     bool flag; // true to be income and false to be expenditure
 
     UserID userID;
 
-    char bookName[61];
+    int offset;
+
+    char description[200];
+
+    Log() = default;
+
+    Log(Behaviour behaviourIn, double sumIn, int quantityIn, bool flagIn,
+        const UserID& userIDIn, int offsetIn, const string_t& descriptionIn);
 };
 
 class LogGroup {
@@ -29,14 +41,28 @@ private:
 
     std::fstream _finance_logs;
 
+    void _reportFinance(BookGroup& bookGroup);
+
+    void _reportEmployee(AccountGroup& accounts, BookGroup& bookGroup);
+
 public:
     LogGroup();
 
     ~LogGroup() = default;
 
-    void report(TokenScanner& line, const LoggingSituation& loggingStatus);
+    /**
+     * COMMAND: report myself
+     * <br>
+     * COMMAND: report finance
+     * <br>
+     * COMMAND: report employee
+     * @param line
+     * @param loggingStatus
+     */
+    void report(TokenScanner& line, const LoggingSituation& loggingStatus,
+                BookGroup& bookGroup, AccountGroup& accounts);
 
-    void add(Log& newLog, const LoggingSituation& loggingStatus);
+    void addLog(Log& newLog);
 
     void addFinanceLog(FinanceLog& newLog);
 
@@ -47,11 +73,7 @@ public:
      */
     void show(TokenScanner& line, const LoggingSituation& loggingStatus);
 
-    void reportFinance();
-
-    void reportEmployee();
-
-    void showLog(TokenScanner& line);
+    void showLog(TokenScanner& line, const LoggingSituation& loggingStatus, BookGroup& bookGroup);
 
     void flush();
 };

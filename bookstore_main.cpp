@@ -70,9 +70,9 @@ bool processLine(AccountGroup& accounts, BookGroup& books,
     } else if (command == "import") {
         books.importBook(line, logInStack, logs);
     } else if (command == "report") {
-        logs.report(line, logInStack);
+        logs.report(line, logInStack, books, accounts);
     } else if (command == "log") {
-        logs.showLog(line);
+        logs.showLog(line, logInStack, books);
     } else {
         throw InvalidCommand("Invalid");
     }

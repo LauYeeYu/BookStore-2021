@@ -187,14 +187,21 @@ public:
      * @param userID
      * @return the related account
      */
-    Account find(string_t& userID);
+    Account find(const string_t& userID);
+
+    /**
+     * This function returns a Account class.
+     * @param userID
+     * @return the related account
+     */
+    Account find(const UserID& userID);
 
     /**
      * This function tells you whether a userID exists.
      * @param userID
      * @return the boolean of whether a userID exists
      */
-    bool exist(string_t& userID);
+    bool exist(const string_t& userID);
 
     /**
      * This function changes the password of a certain user.  There

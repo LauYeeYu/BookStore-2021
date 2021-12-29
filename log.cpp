@@ -2,6 +2,7 @@
 
 #include "account.h"
 #include "log.h"
+#include "book.h"
 
 LogGroup::LogGroup()
 {
@@ -91,17 +92,231 @@ void LogGroup::flush()
     _logs.flush();
 }
 
-void LogGroup::report(TokenScanner& line, const LoggingSituation& loggingStatus)
+void LogGroup::report(TokenScanner& line, const LoggingSituation& loggingStatus,
+                      BookGroup& bookGroup, AccountGroup& accounts)
 {
-    throw InvalidCommand("Invalid");
+    if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
+
+    string_t mode = line.nextToken();
+    if (line.hasMoreToken()) throw InvalidCommand("Invalid");
+
+    if (mode == "myself") {
+        if (loggingStatus.getPriority() < 3) throw InvalidCommand("Invalid");
+        UserID myself(loggingStatus.getID());
+        _logs.seekp(0, std::ios::end);
+        const int end = _logs.tellp();
+        _logs.seekg(0);
+        Log tmpLog;
+        for (int i = 0; i < end; i += sizeof(Log)) {
+            _logs.read(reinterpret_cast<char*>(&tmpLog), sizeof(Log));
+            if (tmpLog.userID == myself) {
+                if (tmpLog.behaviour == Log::buy) {
+                    std::cout << "You bought  : " << tmpLog.quantity << " ";
+                    if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                        std::cout << "< blank name >";
+                    } else {
+                        std::cout << bookGroup.find(tmpLog.offset).name.name;
+                    }
+                    std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                              << ") with $" << std::fixed << std::setprecision(2)
+                              << tmpLog.sum << std::endl;
+                } else if (tmpLog.behaviour == Log::modify) {
+                    std::cout << "You modified: ";
+                    if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                        std::cout << "< blank name >";
+                    } else {
+                        std::cout << bookGroup.find(tmpLog.offset).name.name;
+                    }
+                    std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                              << ") " << tmpLog.description << std::endl;
+                } else if (tmpLog.behaviour == Log::import) {
+                    std::cout << "You import  : " << tmpLog.quantity << " ";
+                    if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                        std::cout << "< blank name >";
+                    } else {
+                        std::cout << bookGroup.find(tmpLog.offset).name.name;
+                    }
+                    std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                              << ") with $" << std::fixed << std::setprecision(2)
+                              << tmpLog.sum << std::endl;
+                } else if (tmpLog.behaviour == Log::create) {
+                    std::cout << "You created : ";
+                    if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                        std::cout << "< blank name >";
+                    } else {
+                        std::cout << bookGroup.find(tmpLog.offset).name.name;
+                    }
+                    std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                              << ")" << std::endl;
+                }
+            }
+        }
+    } else if (mode == "finance") {
+        if (loggingStatus.getPriority() < 7) throw InvalidCommand("Invalid");
+        _reportFinance(bookGroup);
+    } else if (mode == "employee") {
+        if (loggingStatus.getPriority() < 7) throw InvalidCommand("Invalid");
+        _reportEmployee(accounts, bookGroup);
+    } else {
+        throw InvalidCommand("Invalid");
+    }
 }
 
-void LogGroup::add(Log& newLog, const LoggingSituation& loggingStatus)
+void LogGroup::addLog(Log& newLog)
 {
-    throw InvalidCommand("Invalid");
+    _logs.seekp(0, std::ios::end);
+    _logs.write(reinterpret_cast<const char*>(&newLog), sizeof(Log));
 }
 
-void LogGroup::showLog(TokenScanner& line)
+void LogGroup::showLog(TokenScanner& line, const LoggingSituation& loggingStatus, BookGroup& bookGroup)
 {
-    throw InvalidCommand("Invalid");
+    if (loggingStatus.getPriority() < 7 || line.hasMoreToken()) throw InvalidCommand("Invalid");
+    _logs.seekp(0, std::ios::end);
+    const int end = _logs.tellp();
+    _logs.seekg(0);
+    Log tmpLog;
+    for (int i = 0; i < end; i += sizeof(Log)) {
+        _logs.read(reinterpret_cast<char*>(&tmpLog), sizeof(Log));
+        if (tmpLog.behaviour == Log::buy) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tbought  : "
+                      << tmpLog.quantity << " ";
+            if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                std::cout << "< blank name >";
+            } else {
+                std::cout << bookGroup.find(tmpLog.offset).name.name;
+            }
+            std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                      << ") with $" << std::fixed << std::setprecision(2)
+                      << tmpLog.sum << std::endl;
+
+        } else if (tmpLog.behaviour == Log::modify) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tmodified: ";
+            if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                std::cout << "< blank name >";
+            } else {
+                std::cout << bookGroup.find(tmpLog.offset).name.name;
+            }
+            std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                      << ") " << tmpLog.description << std::endl;
+
+        } else if (tmpLog.behaviour == Log::import) {
+            std::cout << "[" << tmpLog.userID.ID << "]\timport  : "
+                      << tmpLog.quantity << " ";
+            if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                std::cout << "< blank name >";
+            } else {
+                std::cout << bookGroup.find(tmpLog.offset).name.name;
+            }
+            std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                      << ") with $" << std::fixed << std::setprecision(2)
+                      << tmpLog.sum << std::endl;
+
+        } else if (tmpLog.behaviour == Log::create) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tcreated : ";
+            if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                std::cout << "< blank name >";
+            } else {
+                std::cout << bookGroup.find(tmpLog.offset).name.name;
+            }
+            std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                      << ")" << std::endl;
+        }
+    }
+}
+
+void LogGroup::_reportFinance(BookGroup& bookGroup)
+{
+    _logs.seekp(0, std::ios::end);
+    const int end = _logs.tellp();
+    _logs.seekg(0);
+    Log tmpLog;
+    for (int i = 0; i < end; i += sizeof(Log)) {
+        _logs.read(reinterpret_cast<char*>(&tmpLog), sizeof(Log));
+        if (tmpLog.behaviour == Log::buy) {
+            std::cout << "+" << std::fixed << std::setprecision(2) << tmpLog.sum << "\t(["
+                      << tmpLog.userID.ID << "] bought: " << tmpLog.quantity << " ";
+            if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                std::cout << "< blank name >";
+            } else {
+                std::cout << bookGroup.find(tmpLog.offset).name.name;
+            }
+            std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                      << "))" << std::endl;
+        } else if (tmpLog.behaviour == Log::import) {
+            std::cout << "-" << std::fixed << std::setprecision(2) << tmpLog.sum << "\t(["
+                      << tmpLog.userID.ID << "] import: " << tmpLog.quantity << " ";
+            if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                std::cout << " < blank name >";
+            } else {
+                std::cout << bookGroup.find(tmpLog.offset).name.name;
+            }
+            std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                      << "))" << std::endl;
+        }
+    }
+}
+
+void LogGroup::_reportEmployee(AccountGroup& accounts, BookGroup& bookGroup)
+{
+    _logs.seekp(0, std::ios::end);
+    const int end = _logs.tellp();
+    _logs.seekg(0);
+    Log tmpLog;
+    for (int i = 0; i < end; i += sizeof(Log)) {
+        _logs.read(reinterpret_cast<char*>(&tmpLog), sizeof(Log));
+        if (accounts.find(tmpLog.userID).priority == 3) {
+            if (tmpLog.behaviour == Log::buy) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tbought  : "
+                          << tmpLog.quantity << " ";
+                if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                    std::cout << "< blank name >";
+                } else {
+                    std::cout << bookGroup.find(tmpLog.offset).name.name;
+                }
+                std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                          << ") with $" << std::fixed << std::setprecision(2)
+                          << tmpLog.sum << std::endl;
+            } else if (tmpLog.behaviour == Log::modify) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tmodified: ";
+                if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                    std::cout << "< blank name >";
+                } else {
+                    std::cout << bookGroup.find(tmpLog.offset).name.name;
+                }
+                std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                          << ") " << tmpLog.description << std::endl;
+            } else if (tmpLog.behaviour == Log::import) {
+                std::cout << "[" << tmpLog.userID.ID << "]\timport  : "
+                          << tmpLog.quantity << " ";
+                if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                    std::cout << "< blank name >";
+                } else {
+                    std::cout << bookGroup.find(tmpLog.offset).name.name;
+                }
+                std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                          << ") with $" << std::fixed << std::setprecision(2)
+                          << tmpLog.sum << std::endl;
+            } else if (tmpLog.behaviour == Log::create) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tcreated : ";
+                if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
+                    std::cout << "< blank name >";
+                } else {
+                    std::cout << bookGroup.find(tmpLog.offset).name.name;
+                }
+                std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
+                          << ")" << std::endl;
+            }
+        }
+    }
+}
+
+Log::Log(Behaviour behaviourIn, double sumIn, int quantityIn, bool flagIn,
+         const UserID& userIDIn, int offsetIn, const string_t& descriptionIn)
+         : behaviour(behaviourIn), sum(sumIn), quantity(quantityIn),
+           flag(flagIn), userID(userIDIn), offset(offsetIn)
+{
+    for (int i = 0; i < descriptionIn.length(); ++i) {
+        description[i] = descriptionIn[i];
+    }
+    description[descriptionIn.size()] = '\0';
 }

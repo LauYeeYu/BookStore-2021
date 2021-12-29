@@ -69,14 +69,6 @@ written by 陈永杉
 >
 >  - `quit` 和 `exit` 指令功能为正常退出系统
 
-#### Bonus 要求
-
-1、支持不同颜色、由数字选择的界面
-
-2、支持中文、emoji 的输入、输出
-
- $*$ 由于第2项 bonus 功能易与输入正确性检测发生冲突，建议在程序中设计一个可控制该项功能开关的选项，可以集成到第 $1$ 项 bonus 功能之中。
-
 ### 账户管理功能
 
 本系统需要实现支持以账户区分不同使用者的功能。具体要求如下：
@@ -314,6 +306,8 @@ private:
     UnrolledLinkedList<UserID, int> _id_index = UnrolledLinkedList<UserID, int>("account_index");
 
     std::fstream _accounts = std::fstream("account");
+    
+    void _add_user(const Account& account);
 
 public:
     AccountGroup();
@@ -329,24 +323,32 @@ public:
     void deleteUser(TokenScanner& line, const LoggingSituation& logStatus);
 
     Account find(std::string& userID);
+    
+    Account find(const UserID& userID);
 
-    bool count(std::string& userID);
+    bool exist(const string_t& userID);
 
     void changePassword(TokenScanner& line, const LoggingSituation& logStatus);
+
+    void flush();
 };
 ```
 
 
 
-#### 登陆状态类
+#### 登录状态类
 
 ```CPP
 class LoggingSituation {
 private:
     int _logged_num = 0; // 存储已登录账户数目
+    
     std::vector<std::string> _logged_in_ID; // 存储已登录的账户ID
+    
     std::vector<int> _logged_in_priority; // 存储已登录的账户对应权限
-    std::vector<int> _selected_book_offset;    
+    
+    std::vector<int> _selected_book_offset;
+    
 public:
     LoggingSituation();
 
@@ -355,6 +357,8 @@ public:
     void logIn(std::string logID, int priority, int bookOffset); // 添加一个已登录账户
 
     void logOut(); // 退出最后一个登录的账户
+    
+    void select(int bookOffset);
 
     [[nodiscard]] bool logged(const std::string& ID) const; // 检查是否有此账户登录
     
@@ -459,7 +463,9 @@ private:
     DoubleUnrolledLinkedList<Author, ISBN, int> _author_book_map = DoubleUnrolledLinkedList<Author, ISBN, int>("book_index_name");
 
     DoubleUnrolledLinkedList<Keyword, ISBN, int> _keywords_book_map = DoubleUnrolledLinkedList<Keyword, ISBN, int>("book_index_name");
-
+    
+    std::fstream _books;
+    
     int all_book_num = 0;
 
 public:
@@ -467,7 +473,9 @@ public:
 
     ~BookGroup();
 
-    Book find(const ISBN& isbn);
+    Book find(int offset);
+    
+    void show(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
     void modify(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
@@ -476,6 +484,8 @@ public:
     void importBook(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup);
 
     void select(TokenScanner& line, LoggingSituation& loggingStatus, LogGroup& logGroup);
+
+    void flush();
 };
 ```
 
@@ -491,14 +501,24 @@ public:
 
 struct FinanceLog {
     double sum;
+    
     bool flag; // true to be income and false to be
 };
 
 struct Log {
+    Behaviour behaviour;
+    
     double sum;
-    bool flag; // true to be income and false to be
+    
+    int quantity;
+    
+    bool flag; // true to be income and false to be expenditure
+    
     UserID userID;
-    char bookName[61];
+    
+    int offset;
+    
+    char description[200];
 };
 
 class LogGroup {
@@ -506,25 +526,28 @@ private:
     std::fstream _logs;
     
     std::fstream _finance_logs;
+
+    void _reportFinance(BookGroup& bookGroup);
+
+    void _reportEmployee(AccountGroup& accounts, BookGroup& bookGroup);
     
 public:
     LogGroup();
 
     ~LogGroup();
 
-    void report(TokenScanner& line, const LoggingSituation& loggingStatus);
+    void report(TokenScanner& line, const LoggingSituation& loggingStatus,
+                BookGroup& bookGroup, AccountGroup& accounts);
 
-    void add(FinanceLog& newLog, const LoggingSituation& loggingStatus);
+    void add(Log& newLog);
 
     void addFinanceLog(FinanceLog& newLog);
     
     void show(TokenScanner& line, const LoggingSituation& loggingStatus);
-
-    void reportFinance();
-
-    void reportEmployee();
     
-    void showLog(TokenScanner& line);
+    void showLog(TokenScanner& line, const LoggingSituation& loggingStatus, BookGroup& bookGroup);
+
+    void flush();
 };
 ```
 
@@ -613,17 +636,3 @@ public:
 #### 日志
 
 所有的操作日志在 log 中顺序存储。
-
-## 其他补充说明：关于bonus
-
-#### 满减
-
-为支持中文输入及 emoji 符号，可能需要更改所有类型中的 char[] 等变量类型并且可能会导致自动语法检测失效。
-
-#### 自动化
-
-希望能够支持 Github Actions。
-
-#### 安全第一
-
-可否考虑通过顺序存储每次输入的指令以实现任意时刻的回溯？

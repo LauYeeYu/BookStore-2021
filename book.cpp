@@ -296,6 +296,15 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
         if (bookParameter.type == isbn) {
             ISBN newISBN(bookParameter.content);
 
+            // add a log
+            string_t logDescription("ISBN ");
+            logDescription += bookToModify.isbn.isbn;
+            logDescription += " -> ";
+            logDescription += bookParameter.content;
+            Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
+                       loggingStatus.getSelected(), logDescription);
+            logGroup.addLog(newLog);
+
             // ISBN
             _isbn_book_map.erase(bookToModify.isbn);
             _isbn_book_map.insert(newISBN, loggingStatus.getSelected());
@@ -328,6 +337,20 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
 
         } else if (bookParameter.type == name) {
             Name newName(bookParameter.content);
+
+            // add a log
+            string_t logDescription("book name: ");
+            if (bookToModify.name.name[0] != '\0') {
+                logDescription += bookToModify.name.name;
+            } else {
+                logDescription += "< blank name >";
+            }
+            logDescription += " -> ";
+            logDescription += bookParameter.content;
+            Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
+                       loggingStatus.getSelected(), logDescription);
+            logGroup.addLog(newLog);
+
             if (bookToModify.name.name[0] != '\0') {
                 _name_book_map.erase(bookToModify.name, bookToModify.isbn);
             }
@@ -337,6 +360,20 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
 
         } else if (bookParameter.type == author) {
             Author newAuthor(bookParameter.content);
+
+            // add a log
+            string_t logDescription("author: ");
+            if (bookToModify.author.author[0] != '\0') {
+                logDescription += bookToModify.author.author;
+            } else {
+                logDescription += "< blank author >";
+            }
+            logDescription += " -> ";
+            logDescription += bookParameter.content;
+            Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
+                       loggingStatus.getSelected(), logDescription);
+            logGroup.addLog(newLog);
+
             if (bookToModify.author.author[0] != '\0') {
                 _author_book_map.erase(bookToModify.author, bookToModify.isbn);
             }
@@ -345,6 +382,20 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             bookToModify.author = newAuthor;
 
         } else if (bookParameter.type == keywords) {
+            // add a log
+            string_t logDescription("keyword: ");
+            if (bookToModify.keywords.keywords[0] != '\0') {
+                logDescription += bookToModify.keywords.keywords;
+            } else {
+                logDescription += "< blank keyword >";
+            }
+            logDescription += " -> ";
+            logDescription += bookParameter.content;
+            Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
+                       loggingStatus.getSelected(), logDescription);
+            logGroup.addLog(newLog);
+
+            // clear the old keywords
             if (bookToModify.keywords.keywords[0] != '\0') {
                 TokenScanner keywordSeparator(string_t(bookToModify.keywords.keywords),
                                               '|', TokenScanner::single);
@@ -355,6 +406,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
                 }
             }
 
+            // add new keywords
             bookToModify.keywords = Keywords(bookParameter.content);
             TokenScanner newKeywordSeparator(bookParameter.content,
                                              '|', TokenScanner::single);
@@ -364,7 +416,21 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             }
 
         } else if (bookParameter.type == price) {
-            bookToModify.price = stringToDouble(bookParameter.content);
+            // add a log
+            string_t logDescription("price: ");
+            std::stringstream oldPriceStream;
+            oldPriceStream << std::fixed << std::setprecision(2) << bookToModify.price;
+            logDescription += oldPriceStream.str();
+            logDescription += " -> ";
+            double newPrice = stringToDouble(bookParameter.content);
+            std::stringstream newPriceStream;
+            newPriceStream << std::fixed << std::setprecision(2) << newPrice;
+            logDescription += newPriceStream.str();
+            Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
+                       loggingStatus.getSelected(), logDescription);
+            logGroup.addLog(newLog);
+
+            bookToModify.price = newPrice;
         }
 
         // Put the book back
@@ -414,9 +480,14 @@ void BookGroup::buy(TokenScanner& line, const LoggingSituation& loggingStatus, L
     std::cout << std::fixed << std::setprecision(2) << quantity * book.price << std::endl;
     _books.seekp(*offset);
     _books.write(reinterpret_cast<const char*>(&book), sizeof(Book));
-    delete offset;
+
+    // add logs
+    Log log(Log::buy, quantity * book.price, quantity, true,
+            UserID(loggingStatus.getID()), *offset, string_t());
+    logGroup.addLog(log);
     FinanceLog financeLog{quantity * book.price, true};
     logGroup.addFinanceLog(financeLog);
+    delete offset;
 }
 
 void BookGroup::importBook(TokenScanner& line, const LoggingSituation& loggingStatus, LogGroup& logGroup)
@@ -443,6 +514,11 @@ void BookGroup::importBook(TokenScanner& line, const LoggingSituation& loggingSt
     book.quantity += quantity;
     _books.seekp(loggingStatus.getSelected());
     _books.write(reinterpret_cast<const char*>(&book), sizeof(Book));
+
+    // add logs
+    Log log(Log::import, totalCost, quantity, false,
+            UserID(loggingStatus.getID()), loggingStatus.getSelected(), string_t());
+    logGroup.addLog(log);
     FinanceLog financeLog{totalCost, false};
     logGroup.addFinanceLog(financeLog);
 }
@@ -458,12 +534,16 @@ void BookGroup::select(TokenScanner& line, LoggingSituation& loggingStatus, LogG
     ISBN isbn(ISBNString);
     int* offsetPtr = _isbn_book_map.get(isbn);
     int offset;
-    if (offsetPtr == nullptr) {
+    if (offsetPtr == nullptr) { // no such book
         _books.seekp(0, std::ios::end);
         offset = _books.tellp();
         _isbn_book_map.insert(isbn, offset);
         Book book(ISBNString);
         _books.write(reinterpret_cast<const char*>(&book), sizeof(Book));
+
+        Log log(Log::create, 0, 0, true,
+                UserID(loggingStatus.getID()), offset, string_t());
+        logGroup.addLog(log);
     } else {
         offset = *offsetPtr;
     }

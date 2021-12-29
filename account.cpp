@@ -238,7 +238,7 @@ void AccountGroup::deleteUser(TokenScanner& line, const LoggingSituation& logSta
     _id_index.erase(ID);
 }
 
-Account AccountGroup::find(string_t& userID)
+Account AccountGroup::find(const string_t& userID)
 {
     UserID ID(userID);
     int* position = _id_index.get(ID);
@@ -250,7 +250,18 @@ Account AccountGroup::find(string_t& userID)
     return account;
 }
 
-bool AccountGroup::exist(string_t& userID)
+Account AccountGroup::find(const UserID& userID)
+{
+    int* position = _id_index.get(userID);
+    if (position == nullptr) throw InvalidCommand("Invalid");
+    _accounts.seekg(*position);
+    delete position;
+    Account account;
+    _accounts.read(reinterpret_cast<char*>(&account), sizeof(Account));
+    return account;
+}
+
+bool AccountGroup::exist(const string_t& userID)
 {
     UserID ID(userID);
     int* position = _id_index.get(ID);
