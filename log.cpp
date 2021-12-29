@@ -130,7 +130,7 @@ void LogGroup::report(TokenScanner& line, const LoggingSituation& loggingStatus,
                     std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
                               << ") " << tmpLog.description << std::endl;
                 } else if (tmpLog.behaviour == Log::import) {
-                    std::cout << "You import  : " << tmpLog.quantity << " ";
+                    std::cout << "You imported: " << tmpLog.quantity << " ";
                     if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
                         std::cout << "< blank name >";
                     } else {
@@ -200,7 +200,7 @@ void LogGroup::showLog(TokenScanner& line, const LoggingSituation& loggingStatus
                       << ") " << tmpLog.description << std::endl;
 
         } else if (tmpLog.behaviour == Log::import) {
-            std::cout << "[" << tmpLog.userID.ID << "]\timport  : "
+            std::cout << "[" << tmpLog.userID.ID << "]\timported: "
                       << tmpLog.quantity << " ";
             if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
                 std::cout << "< blank name >";
@@ -234,7 +234,7 @@ void LogGroup::_reportFinance(BookGroup& bookGroup)
         _logs.read(reinterpret_cast<char*>(&tmpLog), sizeof(Log));
         if (tmpLog.behaviour == Log::buy) {
             std::cout << "+" << std::fixed << std::setprecision(2) << tmpLog.sum << "\t(["
-                      << tmpLog.userID.ID << "] bought: " << tmpLog.quantity << " ";
+                      << tmpLog.userID.ID << "] bought  : " << tmpLog.quantity << " ";
             if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
                 std::cout << "< blank name >";
             } else {
@@ -244,7 +244,7 @@ void LogGroup::_reportFinance(BookGroup& bookGroup)
                       << "))" << std::endl;
         } else if (tmpLog.behaviour == Log::import) {
             std::cout << "-" << std::fixed << std::setprecision(2) << tmpLog.sum << "\t(["
-                      << tmpLog.userID.ID << "] import: " << tmpLog.quantity << " ";
+                      << tmpLog.userID.ID << "] imported: " << tmpLog.quantity << " ";
             if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
                 std::cout << " < blank name >";
             } else {
@@ -264,7 +264,7 @@ void LogGroup::_reportEmployee(AccountGroup& accounts, BookGroup& bookGroup)
     Log tmpLog;
     for (int i = 0; i < end; i += sizeof(Log)) {
         _logs.read(reinterpret_cast<char*>(&tmpLog), sizeof(Log));
-        if (accounts.find(tmpLog.userID).priority == 3) {
+        if (tmpLog.priority == 3) {
             if (tmpLog.behaviour == Log::buy) {
                 std::cout << "[" << tmpLog.userID.ID << "]\tbought  : "
                           << tmpLog.quantity << " ";
@@ -286,7 +286,7 @@ void LogGroup::_reportEmployee(AccountGroup& accounts, BookGroup& bookGroup)
                 std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
                           << ") " << tmpLog.description << std::endl;
             } else if (tmpLog.behaviour == Log::import) {
-                std::cout << "[" << tmpLog.userID.ID << "]\timport  : "
+                std::cout << "[" << tmpLog.userID.ID << "]\timported: "
                           << tmpLog.quantity << " ";
                 if (bookGroup.find(tmpLog.offset).name.name[0] == '\0') {
                     std::cout << "< blank name >";
@@ -310,10 +310,10 @@ void LogGroup::_reportEmployee(AccountGroup& accounts, BookGroup& bookGroup)
     }
 }
 
-Log::Log(Behaviour behaviourIn, double sumIn, int quantityIn, bool flagIn,
-         const UserID& userIDIn, int offsetIn, const string_t& descriptionIn)
-         : behaviour(behaviourIn), sum(sumIn), quantity(quantityIn),
-           flag(flagIn), userID(userIDIn), offset(offsetIn)
+Log::Log(Behaviour behaviourIn, double sumIn, int quantityIn, bool flagIn, const UserID& userIDIn,
+         int offsetIn, const string_t& descriptionIn, int priorityIn)
+         : behaviour(behaviourIn), sum(sumIn), quantity(quantityIn), flag(flagIn),
+           userID(userIDIn), offset(offsetIn), priority(priorityIn)
 {
     for (int i = 0; i < descriptionIn.length(); ++i) {
         description[i] = descriptionIn[i];

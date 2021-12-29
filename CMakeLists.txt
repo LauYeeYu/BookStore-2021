@@ -3,7 +3,7 @@ project(Bookstore)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(code
+add_executable(Bookstore
         bookstore_main.cpp
         unrolled_linked_list.h
         token_scanner.h

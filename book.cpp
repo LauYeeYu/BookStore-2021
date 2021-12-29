@@ -302,7 +302,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             logDescription += " -> ";
             logDescription += bookParameter.content;
             Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
-                       loggingStatus.getSelected(), logDescription);
+                       loggingStatus.getSelected(), logDescription, loggingStatus.getPriority());
             logGroup.addLog(newLog);
 
             // ISBN
@@ -348,7 +348,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             logDescription += " -> ";
             logDescription += bookParameter.content;
             Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
-                       loggingStatus.getSelected(), logDescription);
+                       loggingStatus.getSelected(), logDescription, loggingStatus.getPriority());
             logGroup.addLog(newLog);
 
             if (bookToModify.name.name[0] != '\0') {
@@ -371,7 +371,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             logDescription += " -> ";
             logDescription += bookParameter.content;
             Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
-                       loggingStatus.getSelected(), logDescription);
+                       loggingStatus.getSelected(), logDescription, loggingStatus.getPriority());
             logGroup.addLog(newLog);
 
             if (bookToModify.author.author[0] != '\0') {
@@ -392,7 +392,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             logDescription += " -> ";
             logDescription += bookParameter.content;
             Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
-                       loggingStatus.getSelected(), logDescription);
+                       loggingStatus.getSelected(), logDescription, loggingStatus.getPriority());
             logGroup.addLog(newLog);
 
             // clear the old keywords
@@ -427,7 +427,7 @@ void BookGroup::modify(TokenScanner& line, const LoggingSituation& loggingStatus
             newPriceStream << std::fixed << std::setprecision(2) << newPrice;
             logDescription += newPriceStream.str();
             Log newLog(Log::modify, 0, 0, false, UserID(loggingStatus.getID()),
-                       loggingStatus.getSelected(), logDescription);
+                       loggingStatus.getSelected(), logDescription, loggingStatus.getPriority());
             logGroup.addLog(newLog);
 
             bookToModify.price = newPrice;
@@ -483,7 +483,8 @@ void BookGroup::buy(TokenScanner& line, const LoggingSituation& loggingStatus, L
 
     // add logs
     Log log(Log::buy, quantity * book.price, quantity, true,
-            UserID(loggingStatus.getID()), *offset, string_t());
+            UserID(loggingStatus.getID()), *offset,
+            string_t(), loggingStatus.getPriority());
     logGroup.addLog(log);
     FinanceLog financeLog{quantity * book.price, true};
     logGroup.addFinanceLog(financeLog);
@@ -517,7 +518,8 @@ void BookGroup::importBook(TokenScanner& line, const LoggingSituation& loggingSt
 
     // add logs
     Log log(Log::import, totalCost, quantity, false,
-            UserID(loggingStatus.getID()), loggingStatus.getSelected(), string_t());
+            UserID(loggingStatus.getID()), loggingStatus.getSelected(),
+            string_t(), loggingStatus.getPriority());
     logGroup.addLog(log);
     FinanceLog financeLog{totalCost, false};
     logGroup.addFinanceLog(financeLog);
@@ -542,7 +544,8 @@ void BookGroup::select(TokenScanner& line, LoggingSituation& loggingStatus, LogG
         _books.write(reinterpret_cast<const char*>(&book), sizeof(Book));
 
         Log log(Log::create, 0, 0, true,
-                UserID(loggingStatus.getID()), offset, string_t());
+                UserID(loggingStatus.getID()), offset,
+                string_t(), loggingStatus.getPriority());
         logGroup.addLog(log);
     } else {
         offset = *offsetPtr;

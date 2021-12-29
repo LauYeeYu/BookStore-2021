@@ -29,10 +29,12 @@ struct Log {
 
     char description[200];
 
+    int priority;
+
     Log() = default;
 
-    Log(Behaviour behaviourIn, double sumIn, int quantityIn, bool flagIn,
-        const UserID& userIDIn, int offsetIn, const string_t& descriptionIn);
+    Log(Behaviour behaviourIn, double sumIn, int quantityIn, bool flagIn, const UserID& userIDIn,
+        int offsetIn, const string_t& descriptionIn, int priorityIn);
 };
 
 class LogGroup {
