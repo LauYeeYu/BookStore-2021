@@ -13,7 +13,7 @@ struct FinanceLog {
 };
 
 struct Log {
-    enum Behaviour {buy, create, modify, import};
+    enum Behaviour {buy, create, modify, import, login, logout, changePassword, addUser, deleteUser};
 
     Behaviour behaviour;
 

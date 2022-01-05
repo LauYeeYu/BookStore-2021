@@ -1,4 +1,5 @@
 #include "account.h"
+#include "log.h"
 
 UserID::UserID()
 {
@@ -71,9 +72,12 @@ void LoggingSituation::select(int bookOffset)
     _selected_book_offset.back() = bookOffset;
 }
 
-void LoggingSituation::logOut()
+void LoggingSituation::logOut(LogGroup& logs)
 {
     if (_logged_in_ID.empty()) throw InvalidCommand("Invalid");
+    Log newLog(Log::logout, 0, 0, false, UserID(_logged_in_ID.back()),
+               -1, string_t(), _logged_in_priority.back());
+    logs.addLog(newLog);
     --_logged_num;
     _logged_in_ID.pop_back();
     _logged_in_priority.pop_back();
@@ -136,7 +140,7 @@ void AccountGroup::_add_user(const Account& account)
     _accounts.write(reinterpret_cast<const char*>(&account), sizeof(account));
 }
 
-void AccountGroup::switchUser(TokenScanner& line, LoggingSituation& logStatus)
+void AccountGroup::switchUser(TokenScanner& line, LoggingSituation& logStatus, LogGroup& logs)
 {
     if (!line.hasMoreToken()) throw InvalidCommand("Invalid");
     string_t userID = line.nextToken();
@@ -146,6 +150,10 @@ void AccountGroup::switchUser(TokenScanner& line, LoggingSituation& logStatus)
     if (!line.hasMoreToken()) {
         if (account.priority < logStatus.getPriority()) {
             logStatus.logIn(userID, account.priority, -1);
+
+            Log newLog(Log::login, 0, 0, false, UserID(userID),
+                       -1, string_t(), account.priority);
+            logs.addLog(newLog);
         } else {
             throw InvalidCommand("Invalid");
         }
@@ -154,6 +162,10 @@ void AccountGroup::switchUser(TokenScanner& line, LoggingSituation& logStatus)
         if (line.hasMoreToken()) throw InvalidCommand("Invalid");
         if (checkPassword(password, account)) {
             logStatus.logIn(userID, account.priority, -1);
+
+            Log newLog(Log::login, 0, 0, false, UserID(userID),
+                       -1, string_t(), account.priority);
+            logs.addLog(newLog);
         } else {
             throw InvalidCommand("Invalid");
         }
@@ -181,7 +193,7 @@ void AccountGroup::registerUser(TokenScanner& line)
     _add_user(newAccount);
 }
 
-void AccountGroup::addUser(TokenScanner& line, const LoggingSituation& logStatus)
+void AccountGroup::addUser(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs)
 {
     // check authority
     if (logStatus.getPriority() < 3) throw InvalidCommand("Invalid");
@@ -211,9 +223,20 @@ void AccountGroup::addUser(TokenScanner& line, const LoggingSituation& logStatus
 
     Account newAccount(userID, password, userName, priority);
     _add_user(newAccount);
+
+    string_t logDescription("[");
+    logDescription += userID;
+    logDescription += "] (name: ";
+    logDescription += userName;
+    logDescription += ", priority: ";
+    logDescription += priorityString;
+    logDescription += ')';
+    Log newLog(Log::addUser, 0, 0, false, UserID(logStatus.getID()),
+               -1, logDescription, logStatus.getPriority());
+    logs.addLog(newLog);
 }
 
-void AccountGroup::deleteUser(TokenScanner& line, const LoggingSituation& logStatus)
+void AccountGroup::deleteUser(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs)
 {
     // check authority
     if (logStatus.getPriority() < 7) throw InvalidCommand("Invalid");
@@ -236,6 +259,13 @@ void AccountGroup::deleteUser(TokenScanner& line, const LoggingSituation& logSta
 
     // delete user
     _id_index.erase(ID);
+
+    string_t logDescription("[");
+    logDescription += userID;
+    logDescription += "]";
+    Log newLog(Log::deleteUser, 0, 0, false, UserID(logStatus.getID()),
+               -1, logDescription, logStatus.getPriority());
+    logs.addLog(newLog);
 }
 
 Account AccountGroup::find(const string_t& userID)
@@ -270,7 +300,7 @@ bool AccountGroup::exist(const string_t& userID)
     return true;
 }
 
-void AccountGroup::changePassword(TokenScanner& line, const LoggingSituation& logStatus)
+void AccountGroup::changePassword(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs)
 {
     // check authority
     if (logStatus.getPriority() < 1) throw InvalidCommand("Invalid");
@@ -308,6 +338,18 @@ void AccountGroup::changePassword(TokenScanner& line, const LoggingSituation& lo
             account.changePassword(password1);
             _accounts.seekp(*position);
             _accounts.write(reinterpret_cast<char*>(&account), sizeof(Account));
+
+            string_t logDescription;
+            if (userID == logStatus.getID()) {
+                logDescription = "his / her own password";
+            } else {
+                logDescription = "[";
+                logDescription += userID;
+                logDescription += "]\'s password";
+            }
+            Log newLog(Log::changePassword, 0, 0, false, UserID(logStatus.getID()),
+                       -1, logDescription, logStatus.getPriority());
+            logs.addLog(newLog);
         } else {
             delete position;
             position = nullptr;
@@ -347,6 +389,18 @@ void AccountGroup::changePassword(TokenScanner& line, const LoggingSituation& lo
         account.changePassword(password2);
         _accounts.seekp(*position);
         _accounts.write(reinterpret_cast<char*>(&account), sizeof(Account));
+
+        string_t logDescription;
+        if (userID == logStatus.getID()) {
+            logDescription = "his / her own password";
+        } else {
+            logDescription = "[";
+            logDescription += userID;
+            logDescription += "]\'s password";
+        }
+        Log newLog(Log::changePassword, 0, 0, false, UserID(logStatus.getID()),
+                   -1, logDescription, logStatus.getPriority());
+        logs.addLog(newLog);
     }
 
     delete position;

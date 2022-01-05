@@ -148,6 +148,16 @@ void LogGroup::report(TokenScanner& line, const LoggingSituation& loggingStatus,
                     }
                     std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
                               << ")" << std::endl;
+                } else if (tmpLog.behaviour == Log::login) {
+                    std::cout << "You login" << std::endl;
+                } else if (tmpLog.behaviour == Log::logout) {
+                    std::cout << "You logout" << std::endl;
+                } else if (tmpLog.behaviour == Log::changePassword) {
+                    std::cout << "You changed " << tmpLog.description << std::endl;
+                } else if (tmpLog.behaviour == Log::addUser) {
+                    std::cout << "You added   : user " << tmpLog.description << std::endl;
+                } else if (tmpLog.behaviour == Log::deleteUser) {
+                    std::cout << "You deleted : " << tmpLog.description << std::endl;
                 }
             }
         }
@@ -220,6 +230,16 @@ void LogGroup::showLog(TokenScanner& line, const LoggingSituation& loggingStatus
             }
             std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
                       << ")" << std::endl;
+        } else if (tmpLog.behaviour == Log::login) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tlogin" << std::endl;
+        } else if (tmpLog.behaviour == Log::logout) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tlogout" << std::endl;
+        } else if (tmpLog.behaviour == Log::changePassword) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tchanged " << tmpLog.description << std::endl;
+        } else if (tmpLog.behaviour == Log::addUser) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tadded   : user " << tmpLog.description << std::endl;
+        } else if (tmpLog.behaviour == Log::deleteUser) {
+            std::cout << "[" << tmpLog.userID.ID << "]\tdeleted : " << tmpLog.description << std::endl;
         }
     }
 }
@@ -305,6 +325,16 @@ void LogGroup::_reportEmployee(AccountGroup& accounts, BookGroup& bookGroup)
                 }
                 std::cout << " (ISBN=" << bookGroup.find(tmpLog.offset).isbn.isbn
                           << ")" << std::endl;
+            } else if (tmpLog.behaviour == Log::login) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tlogin" << std::endl;
+            } else if (tmpLog.behaviour == Log::logout) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tlogout" << std::endl;
+            } else if (tmpLog.behaviour == Log::changePassword) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tchanged " << tmpLog.description << std::endl;
+            } else if (tmpLog.behaviour == Log::addUser) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tadded   : user " << tmpLog.description << std::endl;
+            } else if (tmpLog.behaviour == Log::deleteUser) {
+                std::cout << "[" << tmpLog.userID.ID << "]\tdeleted : " << tmpLog.description << std::endl;
             }
         }
     }

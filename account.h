@@ -11,6 +11,8 @@
 typedef char char_t;
 typedef std::string string_t;
 
+class LogGroup;
+
 /**
  * @struct UserID
  *
@@ -92,7 +94,7 @@ public:
      * This function log out the account that is at the top of the
      * logging stack.
      */
-    void logOut();
+    void logOut(LogGroup& logs);
 
     /**
      * This function change the selected book of the user at the top
@@ -147,7 +149,7 @@ public:
      * @param line The line user typed
      * @param logStatus The logging stack
      */
-    void switchUser(TokenScanner& line, LoggingSituation& logStatus);
+    void switchUser(TokenScanner& line, LoggingSituation& logStatus, LogGroup& logs);
 
     /**
      * This function registers a user with priority 1.  NO authority
@@ -170,7 +172,7 @@ public:
      * @param line
      * @param logStatus
      */
-    void addUser(TokenScanner& line, const LoggingSituation& logStatus);
+    void addUser(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs);
 
     /**
      * This function deletes a user.  The priority MUST be 7.  The case of
@@ -180,7 +182,7 @@ public:
      * @param line
      * @param logStatus
      */
-    void deleteUser(TokenScanner& line, const LoggingSituation& logStatus);
+    void deleteUser(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs);
 
     /**
      * This function returns a Account class.
@@ -213,7 +215,7 @@ public:
      * @param line
      * @param logStatus
      */
-    void changePassword(TokenScanner& line, const LoggingSituation& logStatus);
+    void changePassword(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs);
 
     void flush();
 };

@@ -47,18 +47,18 @@ bool processLine(AccountGroup& accounts, BookGroup& books,
         if (line.hasMoreToken()) throw InvalidCommand("Invalid");
         return true;
     } else if (command == "su") {
-        accounts.switchUser(line, logInStack);
+        accounts.switchUser(line, logInStack,logs);
     } else if (command == "logout") {
         if (line.hasMoreToken()) throw InvalidCommand("Invalid");
-        logInStack.logOut();
+        logInStack.logOut(logs);
     } else if (command == "register") {
         accounts.registerUser(line);
     } else if (command == "passwd") {
-        accounts.changePassword(line, logInStack);
+        accounts.changePassword(line, logInStack, logs);
     } else if (command == "useradd") {
-        accounts.addUser(line, logInStack);
+        accounts.addUser(line, logInStack, logs);
     } else if (command == "delete") {
-        accounts.deleteUser(line, logInStack);
+        accounts.deleteUser(line, logInStack, logs);
     } else if (command == "show") {
         books.show(line, logInStack, logs);
     } else if (command == "buy") {

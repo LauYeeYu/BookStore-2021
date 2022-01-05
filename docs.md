@@ -314,13 +314,13 @@ public:
 
     ~AccountGroup();
     
-    void switchUser(TokenScanner& line, LoggingSituation& logStatus);
+    void switchUser(TokenScanner& line, LoggingSituation& logStatus, LogGroup& logs);
 
     void registerUser(TokenScanner& line);
 
-    void addUser(TokenScanner& line, const LoggingSituation& logStatus);
+    void addUser(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs);
 
-    void deleteUser(TokenScanner& line, const LoggingSituation& logStatus);
+    void deleteUser(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs);
 
     Account find(std::string& userID);
     
@@ -328,7 +328,7 @@ public:
 
     bool exist(const string_t& userID);
 
-    void changePassword(TokenScanner& line, const LoggingSituation& logStatus);
+    void changePassword(TokenScanner& line, const LoggingSituation& logStatus, LogGroup& logs);
 
     void flush();
 };
@@ -356,7 +356,7 @@ public:
 
     void logIn(std::string logID, int priority, int bookOffset); // 添加一个已登录账户
 
-    void logOut(); // 退出最后一个登录的账户
+    void logOut(LogGroup& logs); // 退出最后一个登录的账户
     
     void select(int bookOffset);
 
