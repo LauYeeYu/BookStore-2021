@@ -1171,7 +1171,6 @@ public:
             ++(mainNode.count);
             _list.seekp(position.first);
             _list.write(reinterpret_cast<char*>(&mainNode), sizeof(_main_node));
-            return;
         } else {
             // Move the node(s) after the node to be inserted
             char* buffer = _read(mainNode.target + (position.second + 1) * sizeof(_node),
